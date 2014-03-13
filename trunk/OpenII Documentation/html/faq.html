@@ -13,207 +13,117 @@
 
 			<a name="top"></a>
 			<ol>
-
-				<li><a href="#faq01">What is the most successful way of viewing large schemata in OpenII?</a></li>
-				<li><a href="#faq02">What is the OpenII neutral schema format for XSD and Relational schema?</a></li>
-				<li><a href="#faq03">What is the meaning of the symbol displayed on the left of a schema node name?</a></li>
-				<li><a href="#faq04">What is a schema model view in OpenII and how does it relate to XSD?</a></li>
+				<li><a href="#faq01">What is the OpenII neutral schema format?</a></li>
+				<li><a href="#faq02">What schema formats can Open II Import?</a></li>
+				<li><a href="#faq03">What is an OpenII model view? Or how does Open II display a schema?</a></li>
+				<li><a href="#faq04">What is the default hierarchical model viewer for the OpenII tools?</a></li>
 				<li><a href="#faq05">How do I change the model view used to display a schema in OpenII?</a></li>
 				<li><a href="#faq06">How do I view code lists (Domains) in OpenII?</a></li>
-				<li><a href="#faq07">How can I improve the performance and results of very large schema matching?</a></li>
-				<li><a href="#faq08">What are the different types of matching done in Proximity, Harmony and Unity?</a></li>
-				<li><a href="#faq09">What does the evidence bar in Harmony do?</a></li>
-				<li><a href="#faq10">Why does the exact matcher produce less than a 100% evidence score for identical strings?</a></li>
-				<li><a href="#faq11">Why doesn't the Name Similarity Matcher produce a high evidence score for two schema elements with the same string name?</a></li>
-				<li><a href="#faq12">Why do some nodes have more than one mapping line even when the Best Filter is on?</a></li>
-				<li><a href="#faq13">How long should it take to match large schemata?</a></li>
-				<li><a href="#faq14">Why does it take a long time to save a project?</a></li>
-				<li><a href="#faq15">How can I know in which XML namespace a schema element is defined?</a></li>
-				<li><a href="#faq16">Why do I see square brackets around a schema element name in Harmony?</a></li>
-				<li><a href="#faq17">Why are there so many matches with low evidence scores?</a></li>
-				<li><a href="#faq18">What is a good range of evidence scores for viewing successful mappings?</a></li>
-				<li><a href="#faq19">Can OpenII import UML models?</a></li>
-				<li><a href="#faq20">What does "Ignore Validated Elements" do in the Matching Dialog?</a></li>
-				<li><a href="#faq21">Why do my existing matches get over-written when I run another matcher?</a></li>
-				<li><a href="#faq22">Why do I get a parse error when importing an XML Schema?</a></li>
-				<li><a href="#faq23">Why am I getting a parse error when importing the exdl-have.xsd schema from niem-2.1?</a></li>
-				<li><a href="#faq24">Does Affinity include domain values (code list values and documentation) when clustering similar schemata?</a></li>
-				<li><a href="#faq25">What NIEM related tasks are facilitated by the OpenII tool suite?</a></li>
-				<li><a href="#faq26">Does OpenII help produce NIEM IEPD artifacts?</a></li>
-				<li><a href="#faq27">Why do NIEM schemata consume so much memory and CPU cycles in OpenII?</a></li>
+				<li><a href="#faq07">What is the most successful way of viewing large schemata in OpenII?</a></li>
+				<li><a href="#faq08">How can I improve the performance and results from matching very large schemata?</a></li>
+				<li><a href="#faq09">What are the different types of matching done in Proximity, Harmony and Unity?</a></li>
+				<li><a href="#faq10">What does the evidence bar in Harmony do?</a></li>
+				<li><a href="#faq11">Why does the exact matcher produce less than a 100% evidence score for identical strings?</a></li>
+				<li><a href="#faq12">Why doesn't the Name Similarity Matcher produce a high evidence score for two schema elements with the same string name?</a></li>
+				<li><a href="#faq13">Why do some nodes have more than one mapping line even when the Best Filter is on?</a></li>
+				<li><a href="#faq14">How long should it take to match large schemata?</a></li>
+				<li><a href="#faq15">Why does it take a long time to save a project?</a></li>
+				<li><a href="#faq16">How can I know in which XML namespace a schema element is defined?</a></li>
+				<li><a href="#faq17">Why do I see square brackets around a schema element name in Harmony?</a></li>
+				<li><a href="#faq18">Why are there so many matches with low evidence scores?</a></li>
+				<li><a href="#faq19">What is a good range of evidence scores for viewing successful mappings?</a></li>
+				<li><a href="#faq20">Can OpenII import UML models?</a></li>
+				<li><a href="#faq21">What does "Ignore Validated Elements" do in the Matching Dialog?</a></li>
+				<li><a href="#faq22">Why do my existing matches get over-written when I run another matcher?</a></li>
+				<li><a href="#faq23">Why do I get a parse error when importing an XML Schema?</a></li>
+				<li><a href="#faq24">Why am I getting a parse error when importing the exdl-have.xsd schema from niem-2.1?</a></li>
+				<li><a href="#faq25">Does Affinity include domain values (code list values and documentation) when clustering similar schemata?</a></li>
+				<li><a href="#faq26">What NIEM related tasks are facilitated by the OpenII tool suite?</a></li>
+				<li><a href="#faq27">Does OpenII help produce NIEM IEPD artifacts?</a></li>
+				<li><a href="#faq28">Why do NIEM schemata consume so much memory and CPU cycles in OpenII?</a></li>
+				<li><a href="#faq29">What is the Hierarchical Filter in Harmony?</a></li>
 			</ol>
-
 			<ol>
 				<li>
 					<div class="chapter">
-						<h3><a name="faq01">What is the most successful way of viewing large schemata in OpenII?</a></h3>
+						<h3><a name="faq01">What is the neutral schema format that is used by the OpenII tools?</a></h3>
 
-						Because NIEM Core and the domain schemata are large and employ a lot of
-						data component re-use, OpenII's hierarchical schema view of NIEM can
-						overwhelm OpenII memory and degrade matching and viewing performance.
-						To avoid these issues, we recommend that NIEM Core and NIEM Domain schemata
-						always be viewed in the "Relational" model view (a data type hierarchy
-						rather than a containment hierarchy).  (See <a href="#faq04">FAQ 4</a> and
-						<a href="#faq05">FAQ 5</a>.)<br/><br/>
+						The Open II schema importer translates popular formalisms (such as XSD, Relational, OWL, and others into one common format called the MITRE Meta Model (M3). The schema components in M3 are Entity, Attribute, Relationship, Subtype, Containment, and Domain. OpenII schemata persist in a relational database and are managed by the OpenII tool called SchemaStore.
+						<br/><br/> 
 
+						The table below lists the names and definitions of the M3 schema components.<br/><br/>
+						<img src="./support/faq/M3_components_chart.png"/>
 						[<a href="#top">top</a>]
 					</div>
 				</li>
-
 				<li>
 					<div class="chapter">
-						<h3><a name="faq02">What is the OpenII neutral schema format for XSD and Relational schema?</a></h3>
+						<h3><a name="faq02">Which schema formats can Open II Import?</a></h3>
 
-						OpenII''s neutral model is the MITRE Meta Model (M3).  OpenII schemata
-						persist in a relational database and are managed by the OpenII tool,
-						SchemaStore.<br/><br/> 
+						The OpenII tool called SchemaStore imports many popular schema formalisms, such as XSD, RDF, or SQL DDL. SchemaStore translates those formalisms into the MITRE Meta Model (M3).  The two tables below shows the alignment of schema components from some popular meta-data formalisms to the M3 schema components. OpenII has many importers and new importers can be added.<br/><br/>					
+						<img src="./support/faq/faq03_chart.png"/>				
+						In addition to traditional formalisms, SchemaStore imports some big-data schema formats. Correspondence between those and the M3 components are shown in the table below.<br/><br/>		
+						<img src="./support/faq/Big-data-to-M3_chart.png"/>
+					[<a href="#top">top</a>]
+					</div>
+				</li>
+				<li>
+					<div class="chapter">
+						<h3><a name="faq03">What is an OpenII model view; how does OpenII display a schema?</a></h3>
 
-						This table shows the correspondence between M3 SchemaStore format and other
-						popular meta-data formalisms.<br/><br/>
+						Some OpenII tools display schemata as a hierarchies.  Hierarchical displays are available in both the Harmony tool and in the Open II Schema Viewer tool. A schema that is stored in the internal MITRE Meta-model (M3) is transposed to a tree hierarchy by one of several Open II model views. A model view determines how the M3 elements are arranged in the tree. For example, an M3 entity, an M3 attribute, an M3 relationship, and an M3 containment, each may become nodes in the hierarchical display of the model. <br/><br/>  
 
-						<img src="./support/faq/faq05_chart.png"/>
+						Choices for model views include the &quot;Specialization View&quot; and the &quot;Containment View&quot;. A user chooses a model view in either the Edit Schema Properties dialog, or in any Open II window that allows for hierarchical displays of a schema (for example Harmony and Schema Viewer).<br/><br/>
+						
+						An OpenII model view determines whether the nodes that appear in a hierarchical organization appear as roots, leaves, siblings, or do not appear at all.  The &quot;Specialization View&quot; is organized according to entity type and subtype associations in the schema. For example, imagine an animal taxonomy displayed using the specialization view. The Animal entity will be displayed as the root, the Cat entity will be indented under the Animal entity, and the Cheetah entity will be indented under the Cat entity. This arrangement is due to the class specialization association among these entity classes. The Specialization View is a type hierarchy. The Specialization View will also display the properties of the entity type indented under the entity type name.<br/><br/>  
 
+						The Containment View displays the hierarchy organized according to the properties that comprise an entity.  For example, a Cat entity which represents the feline animal species may be composed of properties representing limbs, fur, and other characteristics.  Each of those properties may also be defined as entities and together they all make up the representation of Cat.<br/><br/>
+						
+						For more detail on the basic model views in Open II, see the chart below.
+						<img src="./support/faq/Model-View-Node-Hierarchy_chart.png"/>						 
 						[<a href="#top">top</a>]
 					</div>
 				</li>
-
 				<li>
 					<div class="chapter">
-						<h3><a name="faq03">What is the meaning of the symbol displayed on the left of a schema node name?</a></h3>
+						<h3><a name="faq04">Which hierarchical model view is used by default in OpenII tools?</a></h3>
 
-						This table shows the meaning of symbols displayed next to schema nodes in
-						OpenII.  The terminology used for schema element types in the table below
-						is based on the M3 OpenII SchemaStore meta-model. (See <a href="#faq02">FAQ 2</a>)<br/><br/>
+						If the model view assigned to a schema has not already been set by a user (see <a href="#faq05">FAQ 5</a>), then OpenII tools will default to one of the hierarchical views described in <a href="#faq03">FAQ 3</a>.  The default view is based on characteristics of a schema such as the ratios of subtype, relationship, and containment components in the schema.<br/><br/>Because certain combinations of schema components are typically found in certain schema formalisms, the default view is somewhat predictable based on the original formalism of the schema. For example, relational schemata will typically be shown with the Specialization view. XML schemata will typically be shown with the Containment view, unless a schema is very large in which case OpenII tools will automatically default to the Specialization view.  Some large XML schemata can exceed memory capacity if displayed with the Containment view.  Domains and domain values are shown with the Domain view.<br/><br/>
 
-						<table>
-							<thead>
-								<tr>
-									<th>Symbol</th>
-									<th>Schema Element Type</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td><img src="./support/faq/faq06_chart01.png"/></td>
-									<td>
-										The large dark blue dots are M3 Entities.
-									</td>
-								</tr>
-								<tr>
-									<td><img src="./support/faq/faq06_chart02.png"/></td>
-									<td>
-										The small light blue dots are M3 Attributes.
-									</td>
-								</tr>
-								<tr>
-									<td><img src="./support/faq/faq06_chart03.png"/></td>
-									<td>
-										The really small grey dots are M3 Domain Values.
-									</td>
-								</tr>
-								<tr>
-									<td><img src="./support/faq/faq06_chart04.png"/></td>
-									<td>
-										The right-pointing arrows are M3 Relationships.
-									</td>
-								</tr>
-								<tr>
-									<td><img src="./support/faq/faq06_chart05.png"/></td>
-									<td>
-										The blue-grey diamonds are containments.  Containments
-										provide the hierarchical structure of the schema.
-									</td>
-								</tr>
-							</tbody>
-						</table>
-
+						The table below shows typical default views for some of the popular schema formalisms.<br/><br/>
+						<img src="./support/faq/default-model-views_chart.png"/>
 						[<a href="#top">top</a>]
 					</div>
 				</li>
-
 				<li>
 					<div class="chapter">
-						<h3><a name="faq04">What is a schema model view in OpenII and how does it relate to XSD?</a></h3>
+						<h3><a name="faq05">How does a user change the model view used to display a schema in OpenII?</a></h3>
 
-						In Harmony and the OpenII Schema Viewer there are different choices for
-						viewing a schema called model views.  Those choices show different aspects
-						of the schema.<br/><br/>  
-
-						There are three popular model views for OpenII schemata: the "XML" view,
-						the "Relational" view and the "Domain" view.<br/><br/>
-
-						<ul>
-							<li>
-								The <b>XML</b> view displays a hierarchical tree of M3
-								containments.  These M3 containments correspond to XML elements.
-								(See <a href="#faq02">FAQ 2</a>)  XML types correspond to M3
-								Entities and are not depicted in this view.  The element properties
-								are displayed underneath the element.
-							</li>
-
-							<li>
-								The <b>Relational</b> view displays the type derivation hierarchy
-								that is defined in the XML schema using extension.  The top level
-								nodes in this view are M3 entities which correspond to the globally
-								defined XML types. First appearing under each type are the
-								properties directly associated with that type.  They are followed
-								by the sub-types that extend that type.  The M3 entity
-								"AssociationType", for example, will appear under
-								"ComplexObjectType".   Under "AssociationType", are its properties,
-								followed by all the types that are extensions of "AssociationType",
-								such as “ActivityAssociationPersonType”.  The type-derivation
-								hierarchy will continue to expand in this manner.
-							</li>
-
-							<li>
-								The <b>Domain</b> view is used to display domain values such as
-								those that are in XSD enumeration lists or were imported from a
-								comma separated table of codes and descriptions.  If the domain
-								values were imported using the Domain Importer, then the default
-								model view will be the "Domain" view.  If the domain values are
-								part of an XSD expressed as an enumeration, then the user can
-								change the model view to "Domain" in order to see the domain values
-								in that schema.
-							</li>
-						</ul>
-
-						If the model view for a schema has not already been changed by the user,
-						then OpenII displays the schema in the "default" view.  The default for XSD
-						is "XML".  The default for SQL or DDL is "Relational".  Due to the
-						performance issues with large XML schemata, OpenII will automatically
-						switch from the default view to a Relational view when a certain threshold
-						is passed.<br/><br/>
-
-						[<a href="#top">top</a>]
-					</div>
-				</li>
-
-				<li>
-					<div class="chapter">
-						<h3><a name="faq05">How do I change the model view used to display a schema in OpenII?</a></h3>
-
-						The schemata are displayed using a default model view based on their
-						original format at the time of ingest into SchemaStore. (See <a href="#faq03">FAQ 3b</a>)
-						Here are two useful techniques for changing the model view of a schema.
-
+						The schemata are displayed and mapped using one of the hierarchical model views in OpenII (see <a href="#faq04">FAQ 4</a>). Here are some methods for changing the model view of a schema.<br/><br/>
 						<ol>
+								<li>
+								Change the model view in the Schema Viewer (the pane you see when you  
+								double click on a schema in the schema manager): The
+								Schema Viewer has a drop-down field at the top of the pane listing all the 
+								installed model views. For NIEM schemata, we recommend
+								choosing the "Specialization" view.
+							</li>
+								<li>
+								Change the model view in Harmony:  Schemata displayed in the
+								Harmony window all have a clickable label after the schema name
+								declaring the model view currently used for that schema.  Left
+								click that label to get a menu of possible model views.  For NIEM
+								schemata we recommend choosing "Specialization".  Remember to save the
+								project before closing the Harmony window to retain the latest
+								model view chosen.
+							</li>
 							<li>
 								Change the model view in the Project Dialog: Edit Project (right
 								click on project name) in the OpenII Manager tab.  In the Edit
 								Project dialog, you can change the model view by clicking on the
 								schema in the dialog, choosing edit button and changing the model
-								view to "Relational".  We recommend changing all schemata in the
-								project to being in the same model view.
-							</li>
-
-							<li>
-								Change the model view in Harmony:  Schemata displayed in the
-								Harmony window all have a clickable label after the schema name
-								declaring the model view currently used for that schema.  Left
-								click that label to get a menu of possible model views.  For NIEM
-								schemas we recommend choosing "Relational".  Remember to save the
-								project before closing the Harmony window to retain the latest
-								model view chosen.
+								view to &quot;Specialization&quot; or some other view.  We recommend changing all schemata in a
+								project to the same model view.
 							</li>
 						</ol> 
 
@@ -223,176 +133,84 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq06">How do I view code lists (Domains) in OpenII?</a></h3>
+						<h3><a name="faq06">How does a user view code lists (Domains) in OpenII?</a></h3>
 
 						There are multiple model views for an OpenII schema. See <a href="#faq03">FAQ 3</a>
 						explaining some of those.  To view domains and domain values (enumerated
 						values) that are part of a schema or comprise the whole schema, switch the
 						model view to "Domain".  This will show the domain data components in the
-						schema and their associated value lists in both the schema viewer and the
-						Harmony tool. (See <a href="#faq05">FAQ 5</a> on how to switch views.)<br/><br/>
+						schema and their associated value lists in both the Schema Viewer and 
+						Harmony tools. (See <a href="#faq05">FAQ 5</a> on how to switch views.)<br/><br/>
 
 						[<a href="#top">top</a>]
 					</div>
 				</li>
-
 				<li>
 					<div class="chapter">
-						<h3><a name="faq07">How can I improve the performance and results of very large schema matching?</a></h3>
+						<h3><a name="faq07">What is the most successful way of viewing large schemata in OpenII?</a></h3>
 
-						For large schemata there are certain rules of engagement that if followed
-						then performance will not become too much of an issue.  Here are some tips
-						to use when matching NIEM schemata or any large and interrelated schema.<br/><br/>
-
+						Some schemata are large and employ a great deal of data component re-use, as with the National Information Exchange Model (NIEM).  
+						For large, circular referencing schemata, some of the OpenII hierarchical schema viewers will
+						overwhelm memory capacity and degrade matching and viewing performance.
+						To avoid these issues, we recommend that large schemata such as the NIEM Core and the NIEM Domains 
+						always be viewed in the "Specialization" model view (the type hierarchy
+						rather than the containment hierarchy of a schema).  (See <a href="#faq03">FAQ 3</a>, <a href="#faq04">FAQ 4</a>, and
+						<a href="#faq05">FAQ 5</a> for more information about hierarchical model views and how to change them.)<br/><br/>
+						[<a href="#top">top</a>]
+					</div>
+				</li>
+				<li>
+					<div class="chapter">
+						<h3><a name="faq08">How can a user improve the performance matching very large schemata in Harmony?</a></h3>
+						For large schemata there are certain rules of engagement that if followed then performance will not become too much of an issue.  Here are some tips to use in the Harmony tool when matching NIEM schemata or any large and interrelated schema.<br/><br/>
 						<ul>
 							<li>
-								First, for large XSD schemata, particular NIEM Core and the NIEM
-								Domains, the schema model view [<a href="#faq04">FAQ 4</a> and 
-								<a href="#faq05">5</a>] should be Relational.  This will ensure
-								best performance in viewing and matching operations. The first
-								group is recommendations to be followed before running a match and
-								the second group is for after the matchers have run. There are two
-								groups of additional tips listed next that should be used for
-								additional improvement in matching and viewing operations. (If an
-								XML view is preferred, make sure to use these tips to reduce
-								compute cycles and memory usage.)
-							</li>
-
+								<b>Tip: </b>Use the appropriate schema model view.<br/>
+								<b>How: </b>For large XSD schemata, particularly NIEM Core and the NIEM Domains, the schema model view [<a href="#faq04">FAQ 4</a> and 
+<a href="#faq05">FAQ 5</a>] should be Specialization.  This will ensure best performance in viewing and matching operations. (If the Containment view is preferred, make sure to follow the tips for reducing
+compute cycles and memory usage.)
+							</li><br/><br/>
 							<li>
-								Match smaller portions of the schema rather than the entire schema.
-								This can be done several ways.  One is by narrowing the focus area
-								for matching.  The other way is to reduce the hierarchical depth
-								being considered in the matching.
-							</li>
-
+								<b>Tip: </b>Match smaller portions of the schema at a time, rather than matching the whole schema at once.<br/>
+								<b>How: </b>This can be done either by setting one or more focus areas, or by reducing visible tree depth.<br/>
+									<ol>
+									<li>
+									There are several ways to set focus areas for a schema displayed in a Harmony pane.  One way is to right click on a schema node to get a dialog of options.  Click "Select Focus" in that dialog.  For example, right click on the "Person" node in NIEM Core and "Select Focus".  "Person" and its sub-elements will come into focus -- denoted by dashed box drawn around the Person -- while other parts of the schema will be out of focus -- denoted by node name font changing to italics. You can choose multiple focus areas. After the desired focus areas are set, run the matchers. They will execute only on those schema node sets in focus. Another way to set focus is through node name sub-string searches using the Harmony Search dialog. That dialog is under the Search menu in the Harmony pane.
+									</li>
+									<li>
+									Reduce the hierarchical tree depth being considered in the matching. Large schemata may have many levels (from root to leaves) in a hierarchical model view. The more levels being matched the slower the performance for matching.  The outer levels of a hierarchy can be removed from matching by using the depth bar under the schema in the Harmony pane.  Those levels NOT being considered in subsequent matching operations will be indicated by node names in italic font. With fewer levels being matched, the matching results will return more quickly and the display of mapping lines will less cluttered.				</li>
+									</ol>
+							</li><br/>
 							<li>
-								<ul>
+								<b>Tip: </b>Hide a portion of the mapping lines in the Harmony pane. (It is important to know that although mapping lines may not be visible, the matches still exist and will be saved when the project is saved by the user.) This will reduce mapping line clutter and improve screen rendering performance.<br/>
+								<b>How: </b>Removing some mapping lines from the Harmony mapping display can be done in several ways.<br/>
+									<ol>
 									<li>
-										Choose a "Focus Area" or set of schema nodes in which the
-										matchers will execute thereby putting other areas
-										out-of-focus.  There are several ways to set focus areas
-										for schema displayed in Harmony panes.  One way is to right
-										click on a schema node to get a dialog of options.  Click
-										"Select Focus" in that dialog.  For example, right click on
-										the "Person" node in NIEM Core and "Select Focus".  "Person"
-										and its sub-elements will come into focus -- denoted by
-										dashed box drawn around the Person -- while other parts of
-										the schema will be out of focus -- denoted by node name font
-										changing to italics. You can choose multiple focus areas.
-										After the desired focus areas are set, run the matchers of
-										choice. They will execute only on those schema areas in
-										focus. Another way to set focus is dynamically using search
-										strings in the Harmony Search dialog.
+									Set focus areas as described above. The right-click dialog on a node provides choices for setting focus or removing focus on the node and its tree branch . Node sets that are out of focus will have their mapping lines removed from display, making it easier to see matches of interest. Although the mapping lines of nodes that are out-of-focus do not appear in the display, the matches do still exist and will return when the nodes are back in focus. 
 									</li>
-
-									<li>
-										Large schema can have many hierarchical levels which lead to
-										performance issues.  The sublevels in a hierarchy involved
-										in the matching can be reduced by using the depth bar below
-										the schema pane.  Reducing the depth bar will reduce the
-										matching results.
-									</li> 
-								</ul>
-							</li>
-
-							<li>
-								Another category of tips to improve screen refresh performance and
-								to narrow in on valuable matches is to hide some of the mapping
-								lines from view.  It is important to know that although mapping
-								lines may not be visible, they do exist and will be saved as part
-								of the project mapping.  Hiding mappings can be done several ways.
-							</li>
-
-							<li>
-								<ul>
-									<li>
-										One is to change your focus areas as described above. Although
-										the mapping lines are there the out-of-focus matches are hidden
-										from view. 
+									<li>Narrow in on valuable matches. You can hide mapping lines by raising or lowering the evidence threshold on the right side of the Harmony pane.  This will cause the display to only show the mappings with an evidence strength specified by the upper and lower sliders. You can choose to see just the mappings with strong evidence, or just those with weak evidence, depending on your goal. Matches that are not currently being displayed still exist and will reappear when the evidence sliders change again.
 									</li>
-
-									<li>
-										You can also hide mapping lines by raising the evidence bar on
-										the right side of the Harmony window to show only mappings with
-										high evidence.  On the other hand, you can lower the upper marker
-										in the evidence bar to hide the mappings with strong evidence to
-										focus on the weaker matches.
+									<li>You can reduce the depth of the schema hierarchy in view by sliding the depth bar below the schema pane.  This will hide mapping lines but, again, those matches are still present. 
 									</li>
-
-									<li>
-										You can reduce the depth of the schema in focus by sliding the
-										depth bar below the schema pane for each schema.  This will hide
-										mapping lines but those matches are still present.
+									<li>Finally you can filter out of view certain kinds of matches using the filtering check boxes in the bottom right corner of the Harmony window.
+										<ol type="a"><li>
+										The Best Filter, if checked will only allow the highest scored mapping between nodes be displayed.  See <a href="#faq12">FAQ 12</a> for more detail on what is a "Best" match. 
+										</li><li>
+										The User Filter displays map lines that have a score of 100% due to a user manually accepting the match.
+										</li><li>
+										The System Filter displays those matches that have not been accepted by a user but were generated by the system.
+										</li><li>
+										The Hierarchy Filter effects the display of duplicate matches that are automatically generated from multiple references to the same data component. NIEM schemas have a lot of this as explained in <a href="#faq27">FAQ 27</a>. Checking or un-checking this filter can make a difference in the number of mapping lines displayed -- but only when viewing the schema in Containment model view.  If the schema does not repeatedly reference its own data components or it is displayed with the Specialization model view, then the Hierarchy Filter does not make a difference. For more on the Hierarchy Filter see <a href="#faq29">FAQ 29</a>.
+										</li> </ol>
 									</li>
-
-									<li>
-										Finally you can filter out of view certain kinds of matches
-										using the filtering check boxes in the bottom right corner of
-										the Harmony window.
-									</li>
-
-									<li>
-										<ul>
-											<li>
-												The Best Filter, if checked will only allow the highest scored
-												mapping between nodes be displayed.  See <a href="#faq12">FAQ 12</a>
-												for more detail on what a "Best" match is. 
-											</li>
-
-											<li>
-												The User Filter displays map lines that have a score of 100% due
-												to a user manually accepting the match.  
-											</li>
-
-											<li>
-												The System Filter displays those matches that have not been
-												accepted by a user but were generated by the system.
-											</li>
-
-											<li>
-												The Hierarchy Filter does not make any difference when viewing
-												schema in the Relational model view.  Since that view is
-												recommended for NIEM schemata, the hierarchy filter won't be of
-												much use.  But there are times when an XML model view is needed.<br/><br/>
-
-												The Hierarchy Filter works on duplicate matches that are
-												automatically generated from multiple references to the same
-												data component. NIEM schemas have a lot of this as explained
-												in <a href="#faq27">FAQ 27</a>. Checking or un-checking this
-												filter can make a difference in the number of mapping lines
-												displayed -- but only when viewing the schema in XML model
-												view.  If schemata do not repeatedly reference its own data
-												components or they are displayed in the Relational model view,
-												then the Hierarchy Filter does not make a difference.<br/><br/>  
-
-												To illustrate the function of the Hierarchy Filter imagine
-												viewing two NIEM schemata in Harmony using the XML model view
-												and matching them using both the Exact Matcher -- with hierarchy
-												turned off -- and the Name Similarity Matcher.  NIEM schemata
-												reuse the "id" data component throughout.   All "id" nodes on
-												the left will match all "id" nodes on the right. But with the
-												Hierarchy filter checked, only the "id" nodes whose parents also
-												have good matches will be shown.  In theory this will hide a
-												mapping between the DateType's id attribute and the VehicleType's
-												id attribute, but will display a mapping between the DateType's
-												id attribute and the StartDateType’s id attribute.<br/><br/>
-											</li>
-										</ul>
-									</li>
-								</ul>  
-							</li>
-						</ul>
-
-						The choice of matchers and settings for an automatic matching operation
-						will depend partly on your matching goals.<br/><br/>  
-
+									</ol>
+						</li></ul>
 						[<a href="#top">top</a>]
 					</div>
 				</li>
-
 				<li>
 					<div class="chapter">
-						<h3><a name="faq08">What are the different types of matching done in Proximity, Harmony and Unity?</a></h3>
+						<h3><a name="faq09">What are the different types of matching done in Proximity, Harmony and Unity?</a></h3>
 
 						The Harmony documentation explains how to execute automatic matching and
 						also explains the individual matchers themselves.  As of this writing, some
@@ -460,7 +278,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq09">What does the evidence bar in Harmony do?</a></h3>
+						<h3><a name="faq10">What does the evidence bar in Harmony do?</a></h3>
 
 						Every match is given a score.  The slider bar on the right side in a
 						Harmony window can be moved to change which mapping lines are shown.  Use
@@ -473,7 +291,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq10">Why does the exact matcher produce less than a 100% evidence score for identical strings?</a></h3>
+						<h3><a name="faq11">Why does the exact matcher produce less than a 100% evidence score for identical strings?</a></h3>
 
 						The exact matcher matches whole strings in the node name and/or the
 						documentation string.  And if the Hierarchal matching option is checked it
@@ -490,7 +308,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq11">Why doesn't the Name Similarity Matcher produce a high evidence score for two schema elements with the same string name?</a></h3>
+						<h3><a name="faq12">Why doesn't the Name Similarity Matcher produce a high evidence score for two schema elements with the same string name?</a></h3>
 
 						This Name Similarity matcher takes into account the number of characters in
 						the node name.  Two short node names (such as "Id") that are equal still
@@ -507,7 +325,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq12">Why do some nodes have more than one mapping line even when the Best Filter is on?</a></h3>
+						<h3><a name="faq13">Why do some nodes have more than one mapping line even when the Best Filter is on?</a></h3>
 
 						Even though the Best Filter in Harmony is checked, some nodes may have more
 						than one mapping line attached to it.  There may be more than one best
@@ -526,7 +344,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq13">How long should it take to match large schemata?</a></h3>
+						<h3><a name="faq14">How long should it take to match large schemata?</a></h3>
 
 						If the tips are followed in <a href="#faq07">FAQ 7</a> for matching large
 						schemata, the matching should be finished in a couple of minutes or less.
@@ -542,7 +360,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq14">Why does it take a long time to save a project?</a></h3>
+						<h3><a name="faq15">Why does it take a long time to save a project?</a></h3>
 
 						When a project is saved all the mappings are saved whether or not they are
 						currently visible. There are many ways to filter the mapping lines from
@@ -556,7 +374,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq15">How can I know in which XML namespace a schema element is defined?</a></h3>
+						<h3><a name="faq16">How can a user know in which XML namespace a schema element is defined?</a></h3>
 
 						NIEM XML Schemata rely heavily on namespaces for scoping definitions.  The
 						most commonly used OpenII XML importer does not separate data components
@@ -596,7 +414,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq16">Why do I see square brackets around a schema element name in Harmony?</a></h3>
+						<h3><a name="faq17">Why do I see square brackets around a schema element name in Harmony?</a></h3>
 
 						Although it is not allowed in NIEM conformant schemata, some XML Schema
 						developers choose to create anonymous types.  When those anonymous types
@@ -613,7 +431,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq17">Why are there so many matches with low evidence scores?</a></h3>
+						<h3><a name="faq18">Why are there so many matches with low evidence scores?</a></h3>
 
 						Harmony matchers are built to be over inclusive, to err on the side of
 						matching elements that have only a remote possibility of being an actual
@@ -635,7 +453,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq18">What is a good range of evidence scores for viewing successful mappings?</a></h3>
+						<h3><a name="faq19">What is a good range of evidence scores for viewing successful mappings?</a></h3>
 
 						For NIEM schemata, we recommend setting the evidence bar to .4 to begin
 						with.  After examining, annotating and accepting or rejecting matches from
@@ -658,7 +476,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq19">Can OpenII import UML models?</a></h3>
+						<h3><a name="faq20">Can OpenII import UML models?</a></h3>
 
 						OpenII has one XMI importer that works with a subset of XMI exported from
 						the UML tool called EA Architect.  This XMI importer was created by a
@@ -694,7 +512,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq20">What does "Ignore Validated Elements" do in the Matching Dialog?</a></h3>
+						<h3><a name="faq21">What does "Ignore Validated Elements" do in the Matching Dialog?</a></h3>
 
 						The only way to prevent matches from being overwritten is to accept them
 						before running another matcher.  But even if the matches are accepted,
@@ -710,7 +528,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq21">Why do my existing matches get over-written when I run another matcher?</a></h3>
+						<h3><a name="faq22">Why do my existing matches get over-written when I run another matcher?</a></h3>
 
 						To avoid losing existing matches when executing another matching run, you
 						must manually accept the matches you want to keep.<br/><br/>
@@ -721,7 +539,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq22">Why do I get a parse error when importing an XML Schema?</a></h3>
+						<h3><a name="faq23">Why do I get a parse error when importing an XML Schema?</a></h3>
 
 						The XML Schema file must be valid and must be correctly referencing any
 						import file locations.  XML Spy does not warn against all syntax errors,
@@ -739,7 +557,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq23">Why am I getting a parse error when importing the exdl-have.xsd schema from niem-2.1?</a></h3>
+						<h3><a name="faq24">Why am I getting a parse error when importing the exdl-have.xsd schema from niem-2.1?</a></h3>
 
 						There is an XML syntax error in the file located here:<br/>
 						<blockquote>
@@ -756,7 +574,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq24">Does Affinity include domain values (code list values and documentation) when clustering similar schemata?</a></h3>
+						<h3><a name="faq25">Does Affinity include domain values (code list values and documentation) when clustering similar schemata?</a></h3>
 
 						Affinity was designed for clustering many schemata to find those that are
 						semantically similar.  The cluster functions in Affinity use the words
@@ -780,7 +598,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq25">What NIEM related tasks are facilitated by the OpenII tool suite?</a></h3>
+						<h3><a name="faq26">What NIEM related tasks are facilitated by the OpenII tool suite?</a></h3>
 
 						<ul>
 							<li>
@@ -849,7 +667,7 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq26">Does OpenII help produce NIEM IEPD artifacts?</a></h3>
+						<h3><a name="faq27">Does OpenII help produce NIEM IEPD artifacts?</a></h3>
 
 						The current OpenII tools were not designed to produce NIEM IEPD articats.
 						But there are many analysis tasks done before and after IEPD implementation
@@ -873,10 +691,9 @@
 						[<a href="#top">top</a>]
 					</div>
 				</li>
-
 				<li>
 					<div class="chapter">
-						<h3><a name="faq27">Why do NIEM schemata consume so much memory and CPU cycles in OpenII?</a></h3>
+						<h3><a name="faq28">Why do NIEM schemata consume so much memory and CPU cycles in OpenII?</a></h3>
 
 						NIEM core and NIEM domain schemata contain a large number of data
 						components to begin with.  Adhering to the NDR, the data components are all
@@ -890,6 +707,17 @@
 						[<a href="#top">top</a>]
 					</div>
 				</li>
+				<li>
+					<div class="chapter">
+						<h3><a name="faq29">What is the Hierarchical Filter in Harmony?</a></h3>
+						The Hierarchy Filter effects the display of duplicate matches that are automatically generated from multiple references to the same data component. NIEM schemata have a lot of this as explained in <a href="#faq28">FAQ 28</a>. Checking or un-checking this filter can make a difference in the number of mapping lines displayed -- but only when viewing the schema in the Containment model view (FAQ 3).  If the schema does not repeatedly reference its own data components or it is displayed in the Specialization model view, then the Hierarchy Filter does not make a difference.<br/><br/>
+
+To illustrate the function of the Hierarchy Filter imagine viewing two NIEM schemata in Harmony using the Containment model view and matching them using both the Exact Matcher -- with hierarchy turned off -- and the Name Similarity Matcher.  Note that NIEM schemata reuse the "id" data component throughout all its other components.   All "id" nodes on the left will match all "id" nodes on the right. But with the Hierarchy filter checked, only the "id" nodes whose parents also have good matches will be shown.  In theory this will hide a mapping between the DateType's id attribute and the VehicleType's id attribute, but will display a mapping between the DateType's id attribute and the StartDateType's id attribute.<br/><br/>
+
+						[<a href="#top">top</a>]
+					</div>
+				</li>
+
 			</ol>
 		</div>
 	</body>
