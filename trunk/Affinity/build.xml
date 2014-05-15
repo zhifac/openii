@@ -20,6 +20,10 @@
     	    	<path path="lib/mds-1.0.0.jar"/>
     	    	<path path="lib/prefuse/Prefuse.jar"/>
     	    	<path path="lib/ivc/edu.iu.iv.visualization.dendrogram.jar"/>
+	    		<path path="lib/LinkCommunityFinder.jar"/>
+	    		<path path="lib/gephi/gephi-toolkit.jar"/>
+	    		<path path="lib/jung/jung-graph-impl-2.0.1.jar"/>
+	    		<path path="lib/jung/jung-algorithms-2.0.1.jar"/>
     	    	<path path="lib/opencsv-1.8.jar"/>
     	    	<path path="lib/SchemaStoreClient.jar"/>
     	    	<path path="lib/SchemaStorePorters.jar"/>
@@ -47,7 +51,7 @@
 
 	<!-- Cleans up the constructed jar files -->
 	<target name="clean">
-		<delete dir="build/classes"/>
+		<delete dir="bin"/>
 	    <delete file="Affinity.jar"/>
     </target>
 
