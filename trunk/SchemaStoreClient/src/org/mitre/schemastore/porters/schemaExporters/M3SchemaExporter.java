@@ -14,14 +14,18 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
+
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.xml.ConvertToXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 
 /**
  * Class for moving SchemaStore format between SchemaStore Instances
@@ -86,16 +90,29 @@ public class M3SchemaExporter extends SchemaExporter
 		try {
 			// Generates the XML document
 			Document document = generateXMLDocument(schema.getId());
-
+			DOMSource domSource = new DOMSource(document);
+			File tempFile = File.createTempFile("M3S", ".xml");
+			StreamResult streamResult = new StreamResult(tempFile);
+			Transformer serializer = TransformerFactory.newInstance().newTransformer();
+			serializer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
+			serializer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount",
+					"4");
+			serializer.transform(domSource, streamResult);
+	/*		DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+			DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
+			LSSerializer writer = impl.createLSSerializer();
+			String str = writer.writeToString(document);
 			// Save the XML document to a temporary file
 			File tempFile = File.createTempFile("M3S", ".xml");
 			FileWriter out = new FileWriter(tempFile);
-			OutputFormat format = new OutputFormat(document);
+			out.write(str);
+			//deprecated
+	/*		OutputFormat format = new OutputFormat(document);
 			format.setIndenting(true);
 			XMLSerializer serializer = new XMLSerializer(out, format);
 			serializer.serialize(document);
 			out.close();
-			
+			*/
 			// Generate a zip file for the specified file
 			ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(file));
 			FileInputStream in = new FileInputStream(tempFile);
