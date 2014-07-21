@@ -194,11 +194,7 @@ public class XSDImporterMerged extends SchemaImporter
 			Schema mainSchema = xmlSchemaReader.read();
 			getRootElements(mainSchema);
 			
-			SchemaModel xmlModel = null;
-			for (SchemaModel gm : HierarchicalSchemaInfo.getSchemaModels()){
-				if (gm.getName().equalsIgnoreCase("XML"))
-					gm = xmlModel;
-			}
+
 			
 			/** verify correctness of imported schema **/
 			org.mitre.schemastore.model.Schema schema = new org.mitre.schemastore.model.Schema(0,"foo","","","","",false);
@@ -224,7 +220,7 @@ public class XSDImporterMerged extends SchemaImporter
 
 	/**
 	 * processSchemaElements(): processes the schemaElements by importing 
-	 * them into seperate schemas one per namespace
+	 * them into separate schemas one per namespace
 	 * 
 	 * @throws Exception
 	 */

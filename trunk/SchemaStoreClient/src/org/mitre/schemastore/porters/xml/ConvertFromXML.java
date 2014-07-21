@@ -47,9 +47,15 @@ public class ConvertFromXML
 		ArrayList<String> values = new ArrayList<String>();
 		for(Element childElement : getElements(element,tag))
 		{
-			String value = childElement.getFirstChild().getNodeValue();
-			values.add(value.equals("NULL") ? "" : value);			
+			if (childElement.getFirstChild() != null) {
+				String value = childElement.getFirstChild().getNodeValue();
+				if (!value.equals("NULL"))
+				{
+					values.add(value);	
+				}
+			}
 		}
+
 		return values;
 	}
 	
@@ -65,7 +71,18 @@ public class ConvertFromXML
 	
 	/** Retrieves a value from the element */
 	static private String getValue(Element element, String tag)
-		{ try { return getValues(element,tag).get(0); } catch(Exception e) { return null; } }
+		{ 
+			try {
+				ArrayList<String> values = getValues(element, tag);
+				if (!values.isEmpty()){
+					return getValues(element,tag).get(0);}
+				else {
+					return null;
+				} 
+			}catch(Exception e) { 
+				return null; 
+			} 
+		}
 	
 	/** Retrieves an integer value from the element */
 	static private Integer getIntegerValue(Element element, String tag)

@@ -6,7 +6,7 @@ package org.mitre.schemastore.porters.mappingExporters;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,9 +16,11 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.mitre.schemastore.model.Function;
 import org.mitre.schemastore.model.FunctionImp;
 import org.mitre.schemastore.model.Mapping;
@@ -28,6 +30,7 @@ import org.mitre.schemastore.model.schemaInfo.model.CompleteSchemaModel;
 import org.mitre.schemastore.porters.xml.ConvertToXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 
 /**
  * Class for moving SchemaStore mappings between SchemaStore repositories
@@ -105,14 +108,28 @@ public class M3MappingExporter extends MappingExporter
 		try {
 			// Generates the XML document
 			Document document = generateXMLDocument(mapping, mappingCells);
-
+			DOMSource domSource = new DOMSource(document);
+			File tempFile = File.createTempFile("M3M", ".xml");
+			StreamResult streamResult = new StreamResult(tempFile);
+			Transformer serializer = TransformerFactory.newInstance().newTransformer();
+			serializer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
+			serializer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount",
+					"4");
+			serializer.transform(domSource, streamResult);
+	/*		DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+			DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
+			LSSerializer writer = impl.createLSSerializer();
+			String str = writer.writeToString(document);
 			// Save the XML document to a temporary file
 			File tempFile = File.createTempFile("M3M", ".xml");
 			FileWriter out = new FileWriter(tempFile);
-			OutputFormat format = new OutputFormat(document);
+			out.write(str);
+			out.close();
+			//Deprecated
+		/*	OutputFormat format = new OutputFormat(document);
 			format.setIndenting(true);
 			XMLSerializer serializer = new XMLSerializer(out, format);
-			serializer.serialize(document);
+			serializer.serialize(document);    */
 
 			// Generate a zip file for the specified file
 			ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(file));
