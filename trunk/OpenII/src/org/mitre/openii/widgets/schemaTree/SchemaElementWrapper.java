@@ -7,43 +7,50 @@ import org.mitre.schemastore.model.SchemaElement;
 
 public class SchemaElementWrapper {
 	private SchemaElement element;
-	private ArrayList<Integer> pathList;
-	private Integer parentId = null;
 	private SchemaElementWrapper parent = null;
+	private Integer typeId = null;
 	
+
 	public SchemaElementWrapper(SchemaElement elem) {
-		this(elem, new ArrayList<Integer>());
+		this(elem, null);
+	}
+	private SchemaElementWrapper(SchemaElement elem, SchemaElementWrapper parent) {
+		this.element = elem;
+
+		this.parent = parent;
 
 	}
-	private SchemaElementWrapper(SchemaElement elem, ArrayList<Integer> pathList) {
-		this(elem, pathList, null);
-	}
-	private SchemaElementWrapper(SchemaElement elem, ArrayList<Integer> pathList, SchemaElementWrapper parent) {
-		this.element = elem;
-		if (pathList.size()>0) {
-			parentId = pathList.get(pathList.size()-1);
-		}
-		this.pathList = pathList;
-		pathList.add(elem.getId());
-		this.parent = parent;
-	}
 	public SchemaElementWrapper createChildWrapper(SchemaElement elem){
-		ArrayList<Integer> paths = (ArrayList<Integer>) pathList.clone();
-		return new SchemaElementWrapper(elem, paths, this);
+		return new SchemaElementWrapper(elem, this);
 	}
 	public SchemaElement getSchemaElement() {
 		return element;
 	}
 	public HashSet<Integer> getPathIds() {
 		HashSet<Integer> pathIds = new HashSet<Integer>();
-		pathIds.addAll(pathList);
+
+		pathIds.add(getSchemaElement().getId());
+		SchemaElementWrapper currentWrapper = this.getParent();
+		while (currentWrapper != null) {
+			pathIds.add(currentWrapper.getSchemaElement().getId());
+			if (currentWrapper.getTypeId() != null){
+				pathIds.add(currentWrapper.getTypeId());
+			}
+			currentWrapper = currentWrapper.getParent();
+		}
 		return pathIds;
 	}
 	public Integer getParentId(){
-		return parentId;
+		if (parent != null) {
+			return parent.getSchemaElement().getId();
+		}
+		return null;
 	}
 	public void insertTypeId(Integer id) {
-		pathList.add(0, id);
+		typeId = id;
+	}
+	public Integer getTypeId() {
+		return typeId;
 	}
 	public SchemaElementWrapper getParent() {
 		return parent;
@@ -54,7 +61,7 @@ public class SchemaElementWrapper {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((element == null) ? 0 : element.hashCode());
-		result = prime * result + ((pathList == null) ? 0 : pathList.hashCode());
+		result = prime * result + ((getPathIds() == null) ? 0 : getPathIds().hashCode());
 		return result;
 	}
 	@Override
@@ -76,11 +83,13 @@ public class SchemaElementWrapper {
 		} else if (!element.equals(other.element)) {
 			return false;
 		}
-		if (pathList == null) {
-			if (other.pathList != null) {
+		HashSet<Integer> pathIdsA = getPathIds();
+		HashSet<Integer> pathIdsB = ((SchemaElementWrapper)obj).getPathIds();
+		if (pathIdsA == null) {
+			if (pathIdsB != null) {
 				return false;
 			}
-		} else if (!pathList.equals(other.pathList)) {
+		} else if (!pathIdsA.equals(pathIdsB)) {
 			return false;
 		}
 		return true;

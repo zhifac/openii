@@ -22,5 +22,5 @@ public class SchemaInTag
 	public Schema getSchema() { return schema; }
 	
 	/** Returns the string representation of this tag schema */
-	public String toString() { return schema.toString(); }
+	public String toString() {  return schema==null?null:schema.toString(); }
 }

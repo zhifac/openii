@@ -165,7 +165,23 @@ public class AboutOpenIIEditor extends EditorPart {
         	browser.setText(e.getMessage());
         }
 	}
-	
+	public boolean isDisposed() {
+		return browser.isDisposed();
+	}
+	public void goToFaqSection(Integer number) {
+		try {
+			String homepage = getHomePage();
+			String faqPage = homepage.substring(0, homepage.lastIndexOf("/")+1) + "faq.html";
+			if (number != null) {
+				faqPage +="#faq" + (number.intValue()<10?"0":"") + number.intValue();
+			}
+			browser.setUrl(faqPage);
+		} catch (HomePageNotFoundException e) {
+			browser.setText(e.getMessage());
+		}
+		
+		
+	}
 	/** determines our home page */
 	private String getHomePage() throws HomePageNotFoundException {
 		// get the base location of our application so we can send our users to the documentation

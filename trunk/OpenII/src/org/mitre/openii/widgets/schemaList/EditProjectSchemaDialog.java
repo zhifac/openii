@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.widgets.schemaTree.SchemaModelSelector;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /** Constructs the Search Dialog */
@@ -22,9 +23,13 @@ public class EditProjectSchemaDialog extends Dialog implements ISelectionChanged
 	/** Stores the keyword field */
 	private SchemaModelSelector selector = null;
 	
+	private HierarchicalSchemaInfo schemaInfo = null;
+	
 	/** Constructs the dialog */
-	public EditProjectSchemaDialog(Shell shell, SchemaModel model)
-		{ super(shell); this.model = model; }	
+	public EditProjectSchemaDialog(Shell shell, SchemaModel model, HierarchicalSchemaInfo schemaInfo)
+		{ super(shell); this.model = model; 
+		this.schemaInfo = schemaInfo;
+		}	
 
 	/** Configures the dialog shell */
 	protected void configureShell(Shell shell)
@@ -43,7 +48,7 @@ public class EditProjectSchemaDialog extends Dialog implements ISelectionChanged
 		pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	
 		// Construct the project model selector and return pane
-		selector = new SchemaModelSelector(pane,model);
+		selector = new SchemaModelSelector(pane,model, schemaInfo, true);
 		selector.addSelectionChangedListener(this);
 		return pane;
 	}

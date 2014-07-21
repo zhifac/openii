@@ -160,7 +160,11 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 				// Generate the repository uri
 				String uri = repository.getURI().toString();
 				if(repository.getType().equals(Repository.DERBY))
+				{
+
 					try { uri = new File(new URI(uri)).getAbsolutePath(); } catch(Exception e) {}
+
+				}
 				
 				// Populate the dialog with the repository information
 				boolean local = repository.getType().equals(Repository.DERBY);
@@ -215,7 +219,8 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 			// Gets the various repository parameters
 			String name = nameField.getText();
 			Integer type = optionsPanel.getOption().equals(SERVICE) ? Repository.SERVICE : databaseType.getOption().equals(LOCAL) ? Repository.DERBY : Repository.POSTGRES;
-			URI uri = type.equals(Repository.SERVICE) ? new URI(webURL.getText()) : databaseURI.getURI();
+			URI uri = type.equals(Repository.SERVICE) ? new URI(webURL.getText()) :(databaseURI.getTextField().getText().startsWith("."))?new URI(databaseURI.getTextField().getText()):databaseURI.getURI();
+
 			String database = databaseName.getText();
 			String username = databaseUser.getText();
 			String password = databasePassword.getText();
