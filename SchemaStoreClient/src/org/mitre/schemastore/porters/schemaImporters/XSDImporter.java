@@ -2,6 +2,9 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import java.io.FileWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
@@ -28,6 +31,7 @@ import org.exolab.castor.xml.schema.Union;
 import org.exolab.castor.xml.schema.Wildcard;
 import org.exolab.castor.xml.schema.XMLType;
 import org.exolab.castor.xml.schema.reader.SchemaReader;
+import org.exolab.castor.xml.schema.writer.SchemaWriter;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Alias;
@@ -57,8 +61,9 @@ import org.mitre.schemastore.porters.URIType;
 public class XSDImporter extends SchemaImporter
 {
 	
-	/** testing main **/ 
-	public static void main(String[] args) throws URISyntaxException, ImporterException{
+	/** testing main 
+	 * @throws ClassNotFoundException **/ 
+	public static void main(String[] args) throws URISyntaxException, ImporterException, ClassNotFoundException{
 		XSDImporter xsdImporter = new XSDImporter();
 		/** set the web proxy to import schemas on internet (if needed) **/
 		 try {
@@ -80,7 +85,7 @@ public class XSDImporter extends SchemaImporter
 
 		Repository repository = null;
 		try {
-			repository = new Repository(Repository.DERBY,new URI("C:/Temp/"),"schemastore","postgres","postgres");
+			repository = new Repository(Repository.DERBY,new URI("C:/Users/mgreer"),"schemastore","postgres","postgres");
 		} catch (URISyntaxException e2) {
 			e2.printStackTrace();
 		}		
@@ -91,13 +96,13 @@ public class XSDImporter extends SchemaImporter
 		}
 			
 		// Initialize the importer
-		//xsdImporter.uri = new URI("C:/Users/mgreer/share/niem/domains/cbrn/3.0/cbrn.xsd");
-		//xsdImporter.uri = new URI("C:/tempSchemas/niem-2.1/niem/domains/maritime/2.1/maritime.xsd");
-		xsdImporter.uri = new URI("C:/Users/mgreer/share/devel/contlearn/accumulo/config/xsd/PanoptesAccumuloConf.xsd");
+		xsdImporter.uri = new URI("C:/Users/mgreer/share/schemas/niem/niem-core/3.0/niem-core.xsd");
+		//xsdImporter.uri = new URI("C:/Users/mgreer/share/schemas/niem/domains/maritime/3.0/maritime.xsd");
+		//xsdImporter.uri = new URI("C:/Users/mgreer/share/devel/contlearn/accumulo/config/xsd/PanoptesAccumuloConf.xsd");
 		xsdImporter.initialize();
-		for (SchemaElement elem : xsdImporter.generateSchemaElements()) {
+	/*	for (SchemaElement elem : xsdImporter.generateSchemaElements()) {
 			System.out.println(elem.getName() + ": " + elem.getDescription() + " - " + elem.getClass().toString());
-		}
+		}*/
 	}
 		
 
@@ -160,13 +165,36 @@ public class XSDImporter extends SchemaImporter
 			/** create DOM tree for main schema **/
 			SchemaReader xmlSchemaReader = new SchemaReader(uri.toString());
 			Schema mainSchema = xmlSchemaReader.read();
+			Writer stringWriter = new StringWriter();
+		//	Writer fileWriter = new FileWriter("C:\\Users\\mgreer\\test.xsd");
+			SchemaWriter xmlSchemaWriter = new SchemaWriter(stringWriter);
+			xmlSchemaWriter.write(mainSchema);
+		/*	int i =0;
+			String output = stringWriter.toString();
+		
+			while (i< output.length()) {
+				String substring;
+			
+				if (i + 80 >output.length()){
+					substring = output.substring(i);
+				}else {
+					substring = output.substring(i, i + 80);
+				}
+				int j = substring.lastIndexOf(' ');
+				if (j != -1) {
+					System.out.println(substring.substring(0,j)); 
+				}
+				else {
+					j=79;
+					System.out.println(substring);
+				}
+				i += j+1;
+			} */
+		//	System.out.println(stringWriter.toString());
+			
 			getRootElements(mainSchema);
 			
-			SchemaModel xmlModel = null;
-			for (SchemaModel gm : HierarchicalSchemaInfo.getSchemaModels()){
-				if (gm.getName().equalsIgnoreCase("XML"))
-					gm = xmlModel;
-			}
+
 		}
 		catch(Exception e) { 			
 			e.printStackTrace();

@@ -28,7 +28,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.mitre.openii.model.RepositoryManager;
+
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Schema;
@@ -77,7 +77,7 @@ public class M3SchemaExporter extends SchemaExporter
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Returns the MD5 hash of the schema for a given schemaId found in "schemastore".
 	 * This method is only useful if the RepositoryManager is available to return the
@@ -87,7 +87,7 @@ public class M3SchemaExporter extends SchemaExporter
 	 * @return
 	 * @throws IOException
 	 */
-	public String getMD5(Integer schemaId) throws IOException{
+/*	public String getMD5(Integer schemaId) throws IOException{
 
 		List<Repository> repos = RepositoryManager.getRepositories();
 		Iterator<Repository> iter = repos.iterator();
@@ -100,7 +100,7 @@ public class M3SchemaExporter extends SchemaExporter
 		}
 		return null;
 	}
-
+*/
 	/**
 	 * Returns the MD5 hash of the schema for a given schemaId found in the given repository.
 	 * 

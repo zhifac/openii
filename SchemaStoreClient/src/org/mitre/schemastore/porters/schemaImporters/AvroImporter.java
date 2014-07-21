@@ -352,13 +352,14 @@ public class AvroImporter extends SchemaImporter {
 	}
 
 	protected SchemaElement _processFixed(org.apache.avro.Schema schema, SchemaElement parent, String name, String doc, boolean allowNull, boolean noLimit, Set<String> aliases, boolean isSubtype) throws ImporterException{
-		String type = "[FIXED_"+ schema.getFixedSize() + "]";
-		Domain elem = _domainList.get(type);
+		
+
+		Domain elem = _domainList.get(schema.getFullName());
 		if (elem== null)
 		{
-			elem = new Domain(nextAutoInc(), type, "The domain of fixed size fields of length " + schema.getFixedSize(), 0);
+			elem = new Domain(nextAutoInc(), schema.getName(), "fixed size: " + schema.getFixedSize() + " bytes", 0);
 			_schemaElementsAvro.put(elem.hashCode(), elem);
-			_domainList.put(type, elem);
+			_domainList.put(schema.getFullName(), elem);
 		}
 		if (! isSubtype) {
 			_createContainment(elem, parent, name, doc, allowNull, noLimit, aliases);

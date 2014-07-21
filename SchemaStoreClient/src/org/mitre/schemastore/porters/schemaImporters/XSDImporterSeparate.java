@@ -25,6 +25,8 @@ import org.exolab.castor.xml.schema.Facet;
 import org.exolab.castor.xml.schema.Group;
 import org.exolab.castor.xml.schema.Schema;
 import org.exolab.castor.xml.schema.SimpleType;
+import org.exolab.castor.xml.schema.SimpleTypesFactory;
+import org.exolab.castor.xml.schema.Structure;
 import org.exolab.castor.xml.schema.Union;
 import org.exolab.castor.xml.schema.Wildcard;
 import org.exolab.castor.xml.schema.XMLType;
@@ -91,8 +93,10 @@ public class XSDImporterSeparate extends SchemaImporter
 
 	private static HashMap<Integer, SchemaElement> _schemaElementsHS = new HashMap<Integer, SchemaElement>();
 	
+	private static HashMap<Structure, SchemaElement> _xmlSchemaElementHM = new HashMap<Structure, SchemaElement>();
 	/** stores the list of domains seen (used to import elements) **/
-	private static HashMap<String,Domain> _domainList = new HashMap<String,Domain>();
+//	private static HashMap<String,Domain> _domainList = new HashMap<String,Domain>();
+	private static HashMap<String, HashMap<String, Domain>> _domainList = new HashMap<String, HashMap<String,Domain>>();
 	
 	/** Stores the Castor SchemaElems **/
 	private static HashMap<Integer,Object> _schemaElems = new HashMap<Integer,Object>();
@@ -119,6 +123,9 @@ public class XSDImporterSeparate extends SchemaImporter
 	
 	/** Store the namespace prefix associated with schema element **/
 	private static HashMap<String,String> _nsPreByNS = new HashMap<String,String>();
+	
+	/** Store the source for a subtype -- child or parent **/
+	private static HashMap<Integer, Integer> _subtypeNamespaceSource = new HashMap<Integer, Integer>();
 	
 	/** used in cycle detection **/
 	private static ArrayList<Integer> _activeSet = new ArrayList<Integer>();
@@ -170,7 +177,7 @@ public class XSDImporterSeparate extends SchemaImporter
 
 			/** reset the Importer **/
 			_schemaElementsHS = new HashMap<Integer, SchemaElement>();
-			_domainList = new HashMap<String, Domain>();
+			_domainList = new HashMap<String, HashMap<String,Domain>>();
 			_schemaElems = new HashMap<Integer,Object>();
 			_parentIDsBySchemaID  = new HashMap<Integer,HashSet<Integer>>();
 			_mergeSets = new HashMap<Integer,HashSet<Integer>>();
@@ -184,6 +191,8 @@ public class XSDImporterSeparate extends SchemaImporter
 			_attrGroupEntitySet = new HashMap<String,Entity>();
 			_reverseTempTranslationTable = new HashMap<Integer,Integer>();
 			_seenAttrsInAttrGroup = new HashSet<Integer>();
+			_xmlSchemaElementHM = new HashMap<Structure, SchemaElement>();
+			_subtypeNamespaceSource = new HashMap<Integer, Integer>();
 			_tagForSchemas = null;
 			_tagID = null;
 			_mainSchemaTargetNS = null;
@@ -211,11 +220,7 @@ public class XSDImporterSeparate extends SchemaImporter
 			
 			getRootElements(mainSchema);
 			
-			SchemaModel xmlModel = null;
-			for (SchemaModel gm : HierarchicalSchemaInfo.getSchemaModels()){
-				if (gm.getName().equalsIgnoreCase("XML"))
-					gm = xmlModel;
-			}
+
 			
 			/** verify correctness of imported schema **/
 			org.mitre.schemastore.model.Schema schema = new org.mitre.schemastore.model.Schema(0,"foo","","","","",false);
@@ -275,9 +280,10 @@ public class XSDImporterSeparate extends SchemaImporter
 			if (sub instanceof Subtype && !sub.getDescription().equals("CREATED BY SPLIT"))
 			{
 				_schemaElementsByNSPrefix.get(m3Name).remove(sub);
-				String childNSPre = _NSPrefixByElementID.get(((Subtype)sub).getChildID());
-				_NSPrefixByElementID.put(sub.getId(), childNSPre);
-				_schemaElementsByNSPrefix.get(childNSPre).add(sub);
+				String nsPre = _NSPrefixByElementID.get(_subtypeNamespaceSource.get(((Subtype)sub).getId()));
+		
+				_NSPrefixByElementID.put(sub.getId(), nsPre);
+				_schemaElementsByNSPrefix.get(nsPre).add(sub);
 			}
 		}
 		
@@ -396,62 +402,11 @@ public class XSDImporterSeparate extends SchemaImporter
 				se.setName(newName);
 			}
 		}
-		
-		/** attempt to find target namespace and target namespace prefix **/
-		else if (elemDecl instanceof XMLType)
-		{	
-			targetNS = (((XMLType)elemDecl).getSchema().getTargetNamespace() == null) ? ((XMLType)elemDecl).getSchema().getSchemaNamespace() : ((XMLType)elemDecl).getSchema().getTargetNamespace();
-			targetNS = (targetNS == null || targetNS.equals("null")) ? "" : targetNS;
-			targetNSPrefix = ((XMLType)elemDecl).getSchema().getNamespacePrefix(targetNS);	
-			targetNSPrefix = (targetNSPrefix == null || targetNSPrefix.length() == 0 || targetNSPrefix.equals("null")) ? targetNS : targetNSPrefix;
-			//targetNSPrefix = (targetNSPrefix == null || targetNSPrefix.length() == 0 || targetNSPrefix.equals("null")) ? "ns" + nextAutoInc() : targetNSPrefix;
-			
-			if (!m3NotEmpty && targetNS.equals(_mainSchemaTargetNS))
-				targetNSPrefix = _fileNamePrefix;
-				
-			
-			/** update mapping of nsPre --> NS **/
-			if (_nsPreByNS.get(targetNS) == null)
-				_nsPreByNS.put(targetNS,targetNSPrefix);
-			targetNSPrefix = _nsPreByNS.get(targetNS);
-		}
-		
-		else if (elemDecl instanceof AttributeDecl)
-		{ 
-			targetNS = (((AttributeDecl)elemDecl).getSchema().getTargetNamespace() == null) ? ((AttributeDecl)elemDecl).getSchema().getSchemaNamespace() : ((AttributeDecl)elemDecl).getSchema().getTargetNamespace() ;
-			targetNS = (targetNS == null || targetNS.equals("null")) ? "" : targetNS;	
-			targetNSPrefix = ((AttributeDecl)elemDecl).getSchema().getNamespacePrefix(targetNS);	
-			targetNSPrefix = (targetNSPrefix == null || targetNSPrefix.length() == 0 || targetNSPrefix.equals("null")) ? "ns" + nextAutoInc() : targetNSPrefix;
-		
-			if (!m3NotEmpty && targetNS.equals(_mainSchemaTargetNS))
-				targetNSPrefix = _fileNamePrefix;
-			
-			/** update mapping of nsPre --> NS **/
-			if (_nsPreByNS.get(targetNS) == null)
-				_nsPreByNS.put(targetNS,targetNSPrefix);
-			targetNSPrefix = _nsPreByNS.get(targetNS);
-		}
-		
-		else if (elemDecl instanceof ElementDecl)
-		{	
-			targetNS = (((ElementDecl)elemDecl).getSchema().getTargetNamespace() == null) ? ((ElementDecl)elemDecl).getSchema().getSchemaNamespace() : ((ElementDecl)elemDecl).getSchema().getTargetNamespace() ;
-			targetNS = (targetNS == null || targetNS.equals("null")) ? "" : targetNS;	
-			targetNSPrefix = ((ElementDecl)elemDecl).getSchema().getNamespacePrefix(targetNS);	
-			targetNSPrefix = (targetNSPrefix == null || targetNSPrefix.length() == 0 || targetNSPrefix.equals("null")) ? "ns" + nextAutoInc() : targetNSPrefix;
-			
-			if (!m3NotEmpty && targetNS.equals(_mainSchemaTargetNS))
-				targetNSPrefix = _fileNamePrefix;
-			
-			/** update mapping of nsPre --> NS **/
-			if (_nsPreByNS.get(targetNS) == null)
-				_nsPreByNS.put(targetNS,targetNSPrefix);
-			targetNSPrefix = _nsPreByNS.get(targetNS);	
-		}
-		
 		else 
 		{
-			System.out.println("[E] XSDImporter -- attempting to assign namespace to unknown type " + elemDecl.getClass());
-			throw new Exception();
+			String[] targetNSArray = getNsPrefixForElementDecl(elemDecl, elemID, m3NotEmpty);
+			targetNS = targetNSArray[0];
+			targetNSPrefix = targetNSArray[1];
 		}
 	
 		/** add the element to the appropriate arrayList.  Create new arraylist if necessary **/
@@ -471,7 +426,102 @@ public class XSDImporterSeparate extends SchemaImporter
 			throw new Exception("[E] xsdImporter:processElement -- attempting to process non-existent element");
 		
 	}  // end processElement
-	
+	/**
+	 * Returns the appropriate namespace prefix for an element declaration
+	 * @param elemDecl the element declaration: types acceptable AttributeDecl, XMLType, ElementDecl, AttributeGroupReference or extensions of these classes
+	 * @param elemID the id of the element under consideration
+	 * @param m3NotEmpty whether the m3 domain contains elements
+	 * @return the string array of the namespace (element 0) and the namespace prefix (element 1) to use to the element
+	 * @throws Exception 
+	 */
+	private String[] getNsPrefixForElementDecl(Object elemDecl, Integer elemID, Boolean m3NotEmpty) throws Exception {
+		String targetNSPrefix = null, targetNS = null;
+		
+		String[] path = uri.toString().split("/");
+		_fileNamePrefix = path[path.length - 1].substring(0, path[path.length-1].length()-4);
+		
+
+		
+		/** attempt to find target namespace and target namespace prefix **/
+		if (elemDecl instanceof XMLType)
+		{	
+			targetNS = (((XMLType)elemDecl).getSchema().getTargetNamespace() == null) ? ((XMLType)elemDecl).getSchema().getSchemaNamespace() : ((XMLType)elemDecl).getSchema().getTargetNamespace();
+			targetNS = (targetNS == null || targetNS.equals("null")) ? "" : targetNS;
+			targetNSPrefix = ((XMLType)elemDecl).getSchema().getNamespacePrefix(targetNS);	
+			targetNSPrefix = (targetNSPrefix == null || targetNSPrefix.length() == 0 || targetNSPrefix.equals("null")) ? targetNS : targetNSPrefix;
+			//targetNSPrefix = (targetNSPrefix == null || targetNSPrefix.length() == 0 || targetNSPrefix.equals("null")) ? "ns" + nextAutoInc() : targetNSPrefix;
+			
+			if (!m3NotEmpty && targetNS.equals(_mainSchemaTargetNS))
+				targetNSPrefix = _fileNamePrefix;
+				
+			
+			/** update mapping of nsPre --> NS **/
+			if (_nsPreByNS.get(targetNS) == null)
+				_nsPreByNS.put(targetNS,targetNSPrefix);
+			targetNSPrefix = _nsPreByNS.get(targetNS);
+		}
+		
+		else if (elemDecl instanceof AttributeDecl)
+		{ 
+			Attribute attr = (Attribute)_schemaElementsHS.get(elemID);
+			elemDecl = _schemaElems.get(attr.getEntityID());
+			// this is a workaround for the fact that the M3Model requires that attributes be associated with an entity; without an overhaul of the 
+			// M3Model, we can't accurately represent independent attributes; so to work with the model, we just give independent attributes the Namespace of the
+			// entity that uses it
+			return getNsPrefixForElementDecl(elemDecl, attr.getEntityID(), m3NotEmpty);
+		}
+		
+		else if (elemDecl instanceof ElementDecl)
+		{	
+			targetNS = (((ElementDecl)elemDecl).getSchema().getTargetNamespace() == null) ? ((ElementDecl)elemDecl).getSchema().getSchemaNamespace() : ((ElementDecl)elemDecl).getSchema().getTargetNamespace() ;
+			targetNS = (targetNS == null || targetNS.equals("null")) ? "" : targetNS;	
+			targetNSPrefix = ((ElementDecl)elemDecl).getSchema().getNamespacePrefix(targetNS);	
+			targetNSPrefix = (targetNSPrefix == null || targetNSPrefix.length() == 0 || targetNSPrefix.equals("null")) ? "ns" + nextAutoInc() : targetNSPrefix;
+			
+			if (!m3NotEmpty && targetNS.equals(_mainSchemaTargetNS))
+				targetNSPrefix = _fileNamePrefix;
+			
+			/** update mapping of nsPre --> NS **/
+			if (_nsPreByNS.get(targetNS) == null)
+				_nsPreByNS.put(targetNS,targetNSPrefix);
+			targetNSPrefix = _nsPreByNS.get(targetNS);	
+		}
+		else if (elemDecl instanceof AttributeGroupReference)
+		{	
+			AttributeGroupReference attrGrpRef = (AttributeGroupReference) elemDecl;
+			if (attrGrpRef.getReference().contains(":")) {
+				targetNSPrefix = attrGrpRef.getReference().substring(0, attrGrpRef.getReference().lastIndexOf(":"));
+			}
+			else {
+				targetNSPrefix = "";
+			}
+
+			System.out.println(targetNSPrefix);
+			
+
+			/*targetNS = (((AttributeGroupReference)elemDecl)..getTargetNamespace() == null) ? ((ElementDecl)elemDecl).getSchema().getSchemaNamespace() : ((ElementDecl)elemDecl).getSchema().getTargetNamespace() ;
+			targetNS = (targetNS == null || targetNS.equals("null")) ? "" : targetNS;	
+			targetNSPrefix = ((ElementDecl)elemDecl).getSchema().getNamespacePrefix(targetNS);	
+			targetNSPrefix = (targetNSPrefix == null || targetNSPrefix.length() == 0 || targetNSPrefix.equals("null")) ? "ns" + nextAutoInc() : targetNSPrefix;
+			
+			if (!m3NotEmpty && targetNS.equals(_mainSchemaTargetNS))
+				targetNSPrefix = _fileNamePrefix;
+			
+			/** update mapping of nsPre --> NS **/
+		/*	if (_nsPreByNS.get(targetNS) == null)
+				_nsPreByNS.put(targetNS,targetNSPrefix);
+			targetNSPrefix = _nsPreByNS.get(targetNS); */	
+		}
+		else 
+		{
+			System.out.println("[E] XSDImporter -- attempting to assign namespace to unknown type " + elemDecl.getClass());
+			throw new Exception();
+		}
+		String[] retArray = new String[2];
+		retArray[0] = targetNS;
+		retArray[1] = targetNSPrefix;
+		return retArray;
+	}
 	
 	/**
 	 * buildExtensionGraph: add edges to extension graph
@@ -488,7 +538,7 @@ public class XSDImporterSeparate extends SchemaImporter
 				{	
 					String parentNSPre = _NSPrefixByElementID.get(((Containment)se).getParentID());
 					String childNSPre  = _NSPrefixByElementID.get(((Containment)se).getChildID());
-				
+
 					if (childNSPre == null)
 						throw new Exception("[E] parent or child of containment " + se.getName() + " undefined"); 
 					
@@ -594,13 +644,14 @@ public class XSDImporterSeparate extends SchemaImporter
 							throw new Exception();
 						}
 					}
-					
+				
 					if (!entityNSPre.equals(nsPre))
 					{
 						// add edge to the other schema
 						try {
 							Integer otherSchemaID = _schemasByNSPrefix.get(entityNSPre).getId(); 
-							_parentIDsBySchemaID.get(_schemasByNSPrefix.get(nsPre)).add(otherSchemaID);	;
+							
+							_parentIDsBySchemaID.get(_schemasByNSPrefix.get(entityNSPre)).add(_schemasByNSPrefix.get(nsPre).getId());	
 						} catch (Exception e) { 
 							throw new Exception(" [E] xsdImporter -- entity of attribute " + se.getName() + " undefined");
 						}
@@ -655,11 +706,11 @@ public class XSDImporterSeparate extends SchemaImporter
 		ArrayList<Subtype> subtypes = new ArrayList<Subtype>();
 		ArrayList<Relationship> relationships = new ArrayList<Relationship>();
 		ArrayList<Alias> aliases = new ArrayList<Alias>();
-		
+		HashSet<Integer> idHs = new HashSet<Integer>();
 		for (SchemaElement se : unsortedElements)
 		{
 			se.setBase(translatedBase);
-			
+			idHs.add(se.getId());
 			if (se instanceof Entity) 		entities.add((Entity)se);			
 			else if (se instanceof Domain) 	domains.add((Domain)se);
 			else if (se instanceof DomainValue)	domainValues.add((DomainValue)se);
@@ -733,15 +784,20 @@ public class XSDImporterSeparate extends SchemaImporter
 			if (newID == null) 
 				newID = _translationTable.get(attr.getDomainID());	
 			if (newID == null) 
-				throw new Exception("[E] xsdImporter:topologicalSortSchemaElements -- attr with underfined domain ref");
+				throw new Exception("[E] xsdImporter:topologicalSortSchemaElements -- attr with undefined domain ref");
 			attr.setDomainID(newID);
 			
+			if (idHs.contains(attr.getEntityID())) {
 			newID = tempTranslationTable.get(attr.getEntityID());
 			if (newID == null) 
 				newID = _translationTable.get(attr.getEntityID());
 			if (newID == null) 
-				throw new Exception("[E] xsdImporter:topologicalSortSchemaElements -- attr with underfined entity ref");
+				throw new Exception("[E] xsdImporter:topologicalSortSchemaElements -- attr with undefined entity ref");
 			attr.setEntityID(newID);
+			}
+			else {
+				attr.setEntityID(null);
+			}
 		}
 		
 		for (Containment cont : containments)
@@ -759,14 +815,14 @@ public class XSDImporterSeparate extends SchemaImporter
 					newID = _translationTable.get(cont.getParentID());
 			}
 			if (newID == null && cont.getParentID() != null) 
-				throw new Exception("[E] xsdImporter:topologicalSortSchemaElements -- cont with underfined parent ref");
+				throw new Exception("[E] xsdImporter:topologicalSortSchemaElements -- cont with undefined parent ref");
 			cont.setParentID(newID);
 			
 			newID = tempTranslationTable.get(cont.getChildID());
 			if (newID == null)
 				newID = _translationTable.get(cont.getChildID());
 			if (newID == null)
-				throw new Exception("[E] xsdImporter:topologicalSortSchemaElements -- cont with underfined child ref");	
+				throw new Exception("[E] xsdImporter:topologicalSortSchemaElements -- cont with undefined child ref");	
 			cont.setChildID(newID);
 		}
 		
@@ -1220,14 +1276,16 @@ public class XSDImporterSeparate extends SchemaImporter
 	public void processSimpleType (XMLType passedType, SchemaElement parent)
 	{		
 		// assign the default type of String
-		String typeName = "StringDef" + " ";
-		if ((passedType != null) && (passedType.getName() != null) && (passedType.getName().length() > 0)) 
-			typeName = passedType.getName() + " ";
-		
-		// handle "Any" type
-		if (passedType != null && passedType instanceof AnyType)
-			typeName = "Any" + " ";
-		
+		String typeName = "anySimpleType";
+		String namespace = Schema.XSI_NAMESPACE; 
+		if (passedType != null) {
+			namespace =passedType.getSchema().getTargetNamespace()==null?passedType.getSchema().getSchemaNamespace():passedType.getSchema().getTargetNamespace();
+			if  ( (passedType.getName() != null) && (passedType.getName().length() > 0)) {
+			typeName = passedType.getName();
+			}
+		}
+
+	/*	
 		// handle IDREF / IDREFS -- generate relationship to "Any" entity
 		if (parent instanceof Attribute && (typeName.equals("IDREF") || typeName.equals("IDREFS"))){
 		
@@ -1240,28 +1298,41 @@ public class XSDImporterSeparate extends SchemaImporter
 			_schemaElementsHS.put(rel.hashCode(),rel);
 			
 			/** remove the attribute if type ANY is involved **/
-			_schemaElementsHS.remove(parent.getId());
+	 /*		_schemaElementsHS.remove(parent.getId());
 			_schemaElems.remove(parent.getId());
 			
 		}
-		else {
-	
+		else { */
+			HashMap<String, Domain> namespaceDomainList = _domainList.get(namespace);
+			if (namespaceDomainList == null) {
+				namespaceDomainList = new HashMap<String, Domain>();
+				_domainList.put(namespace, namespaceDomainList);
+			}
 			// find Domain for SimpleType (generated if required)
 
 				
-				Domain domain = _domainList.get(typeName);
-
+//				Domain domain = _domainList.get(typeName);
+				Domain domain = namespaceDomainList.get(typeName);
 				boolean isEnumeration = passedType != null && passedType instanceof SimpleType && !(passedType instanceof Union) && ((SimpleType)passedType).hasFacet("enumeration");
-				boolean isBaseDomain =  domain != null && _baseDomainSet.contains(typeName.toLowerCase());
-				if (domain == null || (isEnumeration && isBaseDomain)) {
+	//			boolean isBaseDomain =  domain != null && _baseDomainSet.contains(typeName.toLowerCase());
+				if (domain == null  || isEnumeration) {
 					if (isEnumeration && (passedType.getName()== null || passedType.getName().isEmpty())) {
 						typeName = "";
 					}
-					 domain = new Domain(nextAutoInc(), typeName, (passedType == null ? "" : this.getDocumentation(passedType)), 0);
-					 if (!isBaseDomain) {
-						 _domainList.put(domain.getName(),domain);
-					 }
-					_schemaElementsHS.put(domain.hashCode(), domain);
+					if (typeName.equals("anySimpleType")) {
+						SimpleTypesFactory fact = new SimpleTypesFactory();
+						passedType = fact.getBuiltInType(fact.getBuiltInTypeName(SimpleTypesFactory.ANYSIMPLETYPE_TYPE));
+					}
+					domain = new Domain(nextAutoInc(), typeName + " ", (passedType== null? "": this.getDocumentation(passedType)), 0);
+					if (!isEnumeration || !namespace.equals(Schema.XSI_NAMESPACE)) {
+						namespaceDomainList.put(typeName,domain);
+					}
+
+					 _schemaElems.put(domain.getId(), passedType);
+					_schemaElementsHS.put(domain.getId(), domain);
+				    if (passedType != null) {
+				    	_xmlSchemaElementHM.put(passedType, domain);
+				    }
 					
 					if (isEnumeration){
 						// create DomainValues (if specified for SimpleType)
@@ -1270,11 +1341,10 @@ public class XSDImporterSeparate extends SchemaImporter
 						while (facets.hasMoreElements()) {
 							Facet facet = (Facet) facets.nextElement();
 							DomainValue domainValue = new DomainValue(nextAutoInc(), facet.getValue(), this.getDocumentation(facet), domain.getId(), 0);
-							_schemaElementsHS.put(domainValue.hashCode(), domainValue);
+							_schemaElementsHS.put(domainValue.getId(), domainValue);
 						}
 					}
-				
-				// TODO: process Union Types
+					
 				else if (passedType != null && passedType instanceof Union){
 					Union passedUnion = (Union)passedType;
 					Enumeration<?> memberTypes = passedUnion.getMemberTypes();
@@ -1283,7 +1353,8 @@ public class XSDImporterSeparate extends SchemaImporter
 						
 						// create a subtype to capture union
 						Subtype subtype = new Subtype(nextAutoInc(),domain.getId(),-1,0);
-						_schemaElementsHS.put(subtype.hashCode(), subtype);
+						_subtypeNamespaceSource.put(subtype.getId(), domain.getId());
+						_schemaElementsHS.put(subtype.getId(), subtype);
 						processSimpleType(childType,subtype);
 					}
 				}
@@ -1296,7 +1367,7 @@ public class XSDImporterSeparate extends SchemaImporter
 				((Containment)parent).setChildID(domain.getId());
 			else if (parent instanceof Subtype)
 				((Subtype)parent).setChildID(domain.getId());
-		}
+		 //}
 	} // end method processSimpleType
 
 
@@ -1322,12 +1393,14 @@ public class XSDImporterSeparate extends SchemaImporter
 		
 		// check to see if entity has been created for passed complex type
 		// create new Entity if none has been created 
-		Entity entity = new Entity(nextAutoInc(), passedType.getName(), this.getDocumentation(passedType), 0);
-		
-		if (_schemaElementsHS.containsKey(passedType.hashCode()) == false) 
+
+		Entity entity = (Entity)_xmlSchemaElementHM.get(passedType);
+		if (entity == null) 
 		{
-			_schemaElementsHS.put(passedType.hashCode(), entity);
-			_schemaElems.put(passedType.hashCode(), passedType);
+			entity = new Entity(nextAutoInc(), passedType.getName(), this.getDocumentation(passedType), 0);
+			_xmlSchemaElementHM.put(passedType, entity);
+			_schemaElementsHS.put(entity.getId(), entity);
+			_schemaElems.put(entity.getId(), passedType);
 				
 			try 
 			{
@@ -1337,12 +1410,15 @@ public class XSDImporterSeparate extends SchemaImporter
 				while (attrGroupReferences.hasMoreElements())
 				{					
 					AttributeGroupReference attrGroupRef = (AttributeGroupReference)attrGroupReferences.nextElement();
-					Entity attrGroupEntity = new Entity(nextAutoInc(),attrGroupRef.getReference(),"attr group",0);
 				
-					if (_attrGroupEntitySet.containsKey(attrGroupEntity.getName()) == false)
+					Entity attrGroupEntity = _attrGroupEntitySet.get(attrGroupRef.getReference().substring(attrGroupRef.getReference().lastIndexOf(":")+1)); 
+					if (attrGroupEntity == null)
 					{
+						attrGroupEntity = new Entity(nextAutoInc(),attrGroupRef.getReference().substring(attrGroupRef.getReference().lastIndexOf(":")+1),"attr group",0);
+						
 						_attrGroupEntitySet.put(attrGroupEntity.getName(), attrGroupEntity);
 						_schemaElementsHS.put(attrGroupEntity.getId(), attrGroupEntity);
+						_schemaElems.put(attrGroupEntity.getId(), attrGroupRef);
 						
 						Enumeration<?> attrs = attrGroupRef.getAttributes();
 					
@@ -1387,8 +1463,9 @@ public class XSDImporterSeparate extends SchemaImporter
 					/** create subtype **/
 					attrGroupEntity = _attrGroupEntitySet.get(attrGroupEntity.getName());
 					Integer subTypeID = nextAutoInc();
-					Subtype subType = new Subtype(subTypeID,attrGroupEntity.getId(),entity.getId(),0);
+					Subtype subType = new Subtype(subTypeID, entity.getId(), attrGroupEntity.getId(), 0);
 					_schemaElementsHS.put(subTypeID, subType);
+					_subtypeNamespaceSource.put(subTypeID, entity.getId());
 					
 				} // while attr groups left
 			
@@ -1448,28 +1525,32 @@ public class XSDImporterSeparate extends SchemaImporter
 				if (baseType instanceof SimpleType)
 				{
 					Subtype subtype = new Subtype(nextAutoInc(),-1,entity.getId(),0);
-					_schemaElementsHS.put(subtype.hashCode(), subtype);
+					_schemaElementsHS.put(subtype.getId(), subtype);
+					Domain simpleSuperTypeEntity = (Domain) _xmlSchemaElementHM.get(baseType);
 					
-					Entity simpleSuperTypeEntity = new Entity(nextAutoInc(), (baseType.getName() == null ? "" : baseType.getName()), this.getDocumentation(baseType), 0);
-					if (_schemaElementsHS.get(baseType.hashCode()) == null)
+					if (simpleSuperTypeEntity == null)
 					{
-						_schemaElementsHS.put(baseType.hashCode(), simpleSuperTypeEntity);
-						_schemaElems.put(baseType.hashCode(), baseType);
+						String typeName = baseType.getName() == null?"" : baseType.getBaseTypeName();
+						simpleSuperTypeEntity = new Domain(nextAutoInc(), typeName+ " ", this.getDocumentation(baseType), 0);
+						_schemaElementsHS.put(simpleSuperTypeEntity.getId(), simpleSuperTypeEntity);
+						_schemaElems.put(simpleSuperTypeEntity.getId(), baseType);
+						_xmlSchemaElementHM.put(baseType, simpleSuperTypeEntity);
 					}
-					simpleSuperTypeEntity = (Entity)_schemaElementsHS.get(baseType.hashCode());
 					subtype.setParentID(simpleSuperTypeEntity.getId());
+					_subtypeNamespaceSource.put(subtype.getId(), entity.getId());
 				}
 				else if (baseType instanceof ComplexType)
 				{
 					Subtype subtype = new Subtype(nextAutoInc(),-1, entity.getId(),0);
-					_schemaElementsHS.put(subtype.hashCode(), subtype);
+					_schemaElementsHS.put(subtype.getId(), subtype);
 					processComplexType((ComplexType)baseType, subtype);
+					_subtypeNamespaceSource.put(subtype.getId(), subtype.getChildID());
 				}	
 			}	
 		}
 		
 		/** add Entity for complexType as child of passed containment or subtype **/ 
-		entity = (Entity)_schemaElementsHS.get(passedType.hashCode());
+		entity = (Entity)_xmlSchemaElementHM.get(passedType);
 		
 		if (parent instanceof Containment && parent != null)
 			((Containment)parent).setChildID(entity.getId());
@@ -1490,29 +1571,43 @@ public class XSDImporterSeparate extends SchemaImporter
 	public void processGroup (Group group, Entity parent)
 	{	
 		// step through item in a group
-		Enumeration<?> e = group.enumerate();
+		Enumeration<Annotated> e = group.enumerate();
+
 		while (e.hasMoreElements()) 
 		{		
-			Object obj = e.nextElement();
+			Annotated annotated = e.nextElement();
 			
 			// For WildCard, create containment child to "Any" domain
-			if (obj instanceof Wildcard)
+			if (annotated instanceof Wildcard)
 			{
-				Domain anyDomain = _domainList.get("Any");
-				Containment containment = new Containment(nextAutoInc(),"Any", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, 0);
-				_schemaElementsHS.put(containment.hashCode(), containment);
-				_schemaElems.put(containment.hashCode(),obj);
+
+				String defNamespace = Schema.XSI_NAMESPACE;
+				Domain anyDomain = _domainList.get(defNamespace).get("any");
+				if (anyDomain == null) {
+					Domain domain = new Domain(nextAutoInc(), "any ", "", 0);
+					HashMap<String, Domain> namespaceMap = _domainList.get(defNamespace);
+					if (namespaceMap == null) {
+						namespaceMap = new HashMap<String, Domain>();
+						_domainList.put(defNamespace, namespaceMap);
+					}
+					namespaceMap.put("any", domain);
+					_schemaElementsHS.put(domain.getId(), domain);
+				}
+				Containment containment = new Containment(nextAutoInc(),"any", this.getDocumentation(annotated), parent.getId(), anyDomain.getId(), 0, 1, 0);
+				_xmlSchemaElementHM.put(annotated, containment);
+				_schemaElementsHS.put(containment.getId(), containment);
+				_schemaElems.put(containment.getId(), annotated);
 			}
 			// process Group item
-			else if (obj instanceof Group)
-				processGroup((Group)obj, parent);	
+			else if (annotated instanceof Group)
+				processGroup((Group)annotated, parent);	
 			
 			// process Element item
-			else if (obj instanceof ElementDecl)  
-				processElement((ElementDecl)obj, parent);
+			else if (annotated instanceof ElementDecl)  
+				processElement((ElementDecl)annotated, parent);
 			
 			else
-				System.err.println("(E) XSDImporter:processGroup -- Encountered object named " + obj.toString() + " with unknown type " + obj.getClass());				
+				System.err.println("(E) XSDImporter:processGroup -- Encountered object named " + annotated.toString() + " with unknown type " + annotated.getClass());				
 		}
 	} // end method
 
@@ -1530,7 +1625,6 @@ public class XSDImporterSeparate extends SchemaImporter
 		/** dereference xs:ref until we find actual element declarations **/
 		Integer origMin = elementDecl.getMinOccurs();
 		Integer origMax = elementDecl.getMaxOccurs();
-		Integer origHashcode = elementDecl.hashCode();
 		ElementDecl origElementDecl = elementDecl;
 		try {
 			while (elementDecl.isReference() && elementDecl.getReference() != null)
@@ -1538,14 +1632,16 @@ public class XSDImporterSeparate extends SchemaImporter
 		} catch (IllegalStateException e) {}{}
 		
 		/** if containment references elements in same namespace, leave alone **/
-		if (origElementDecl.getSchema().getTargetNamespace().equals(elementDecl.getSchema().getTargetNamespace()))
+
+		if (origElementDecl.getSchema().getTargetNamespace()==elementDecl.getSchema().getTargetNamespace() || (origElementDecl.getSchema().getTargetNamespace() != null && origElementDecl.getSchema().getTargetNamespace().equals(elementDecl.getSchema().getTargetNamespace())))
 		{
-			Containment containment = new Containment(nextAutoInc(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,origMin,origMax,0);
-		
-			if (_schemaElementsHS.containsKey(origHashcode) == false)
+			Containment containment = (Containment)_xmlSchemaElementHM.get(origElementDecl);
+			if (containment == null)
 			{
-				_schemaElementsHS.put(origHashcode, containment);
-				_schemaElems.put(origHashcode,elementDecl);
+				containment = new Containment(nextAutoInc(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,origMin,origMax,0);
+				_xmlSchemaElementHM.put(origElementDecl, containment);
+				_schemaElementsHS.put(containment.getId(), containment);
+				_schemaElems.put(containment.getId(),elementDecl);
 			}
 
 			XMLType childElementType = null;
@@ -1565,12 +1661,14 @@ public class XSDImporterSeparate extends SchemaImporter
 		}
 		else {
 			
-			/** create Containment for Element **/  		
-			Containment origContainment = new Containment(nextAutoInc(),origElementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,origMin,origMax,0);
-			if (_schemaElementsHS.containsKey(origContainment.hashCode()) == false)
+			/** create Containment for Element **/ 
+			Containment origContainment = (Containment)_xmlSchemaElementHM.get(origElementDecl);
+			if (origContainment == null)
 			{
-				_schemaElementsHS.put(origContainment.hashCode(), origContainment);
-				_schemaElems.put(origContainment.hashCode(),origElementDecl);
+				origContainment = new Containment(nextAutoInc(),origElementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,origMin,origMax,0);	
+				_schemaElementsHS.put(origContainment.getId(), origContainment);
+				_schemaElems.put(origContainment.getId(),origElementDecl);
+				_xmlSchemaElementHM.put(origElementDecl, origContainment);
 			}
 
 			XMLType childElementType = null;
@@ -1590,11 +1688,13 @@ public class XSDImporterSeparate extends SchemaImporter
 					+  ((childElementType == null)? null : childElementType.getClass()));
 					
 			/** This assumes the referenced element is a top-level element **/
-			Containment refContainment = new Containment(nextAutoInc(),elementDecl.getName(),this.getDocumentation(elementDecl),null,-1,origMin,origMax,0);
-			if (_schemaElementsHS.containsKey(refContainment.hashCode()) == false)
+			Containment refContainment = (Containment)_xmlSchemaElementHM.get(elementDecl);
+			if (refContainment == null)
 			{
-				_schemaElementsHS.put(refContainment.hashCode(), refContainment);
-				_schemaElems.put(refContainment.hashCode(),elementDecl);
+				refContainment = new Containment(nextAutoInc(),elementDecl.getName(),this.getDocumentation(elementDecl),null,-1,origMin,origMax,0);
+				_schemaElementsHS.put(refContainment.getId(), refContainment);
+				_schemaElems.put(refContainment.getId(), elementDecl);
+				_xmlSchemaElementHM.put(elementDecl, refContainment);
 			}
 
 			XMLType childElementType2 = null;
@@ -1616,7 +1716,8 @@ public class XSDImporterSeparate extends SchemaImporter
 			/** create subtype **/
 			Subtype subtype = new Subtype(nextAutoInc(),origContainment.getId(),refContainment.getId(),0);
 			subtype.setDescription("CREATED BY SPLIT");
-			_schemaElementsHS.put(subtype.hashCode(), subtype);
+			_schemaElementsHS.put(subtype.getId(), subtype);
+			_subtypeNamespaceSource.put(subtype.getId(), origContainment.getId());
 		}  // end else -- case where containment was split
 		
 	} // end method
@@ -1676,10 +1777,13 @@ public class XSDImporterSeparate extends SchemaImporter
 	 * for use during Attribute creation
 	 */
 	private void loadDomains() {
+
+		HashMap<String, Domain> namespaceMap = new HashMap<String, Domain>();
+		_domainList.put("m3Dom", namespaceMap);
 		for (int i = 0; i < baseDomains.length; i++){
 			Domain domain = new Domain(nextAutoInc(), baseDomains[i][0], baseDomains[i][1], 0);
-			_schemaElementsHS.put(domain.hashCode(), domain);
-			_domainList.put(baseDomains[i][0].trim(),  domain);
+			//_schemaElementsHS.put(domain.hashCode(), domain);
+			namespaceMap.put(baseDomains[i][0].trim(),  domain);
 			_baseDomainSet.add(baseDomains[i][0].toLowerCase());
 		}
 
