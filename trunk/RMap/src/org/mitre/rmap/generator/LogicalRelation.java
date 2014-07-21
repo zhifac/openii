@@ -160,8 +160,8 @@ public class LogicalRelation {
 		// that LogicalRelation schemaInfo is based on
 		SchemaModel relationalModel = null, rmapModel = null;
 		for (SchemaModel gm : HierarchicalSchemaInfo.getSchemaModels()){
-			if (gm.getName().equals("Relational")) { relationalModel = gm; }
-			if (gm.getName().equals("RMap - 1 to N")) { rmapModel = gm; }
+			if (gm.getDefaultName().equals("Relational")) { relationalModel = gm; }
+			if (gm.getDefaultName().equals("RMap - 1 to N")) { rmapModel = gm; }
 		}
 
 		if (rmapModel == null || relationalModel == null) {
