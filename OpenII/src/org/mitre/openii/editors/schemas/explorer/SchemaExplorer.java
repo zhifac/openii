@@ -47,8 +47,8 @@ public class SchemaExplorer {
 	/** Each instance is tied to a particular editor window and needs a unique ID **/
 	protected int editorID = 0; 
 	
-	// TODO: Too windows-centric.  Won't work on mac/linux
-	public static String STORAGE_DIRECTORY = "c:\\openii-tmp";
+
+	public static String STORAGE_DIRECTORY;
 
 	static { 
 		String os = System.getProperty("os.name").toLowerCase();
