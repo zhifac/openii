@@ -36,12 +36,14 @@ class SchemaModelItem extends JPanel
 		modelSelection.setOpaque(false);
 		modelSelection.setPreferredSize(new Dimension(80,20));
 		modelSelection.addItem("<Default>");
+		HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schema.getId());
 		for(SchemaModel model : HierarchicalSchemaInfo.getSchemaModels())
-			modelSelection.addItem(model);
+			if (schemaInfo.shouldExpandAll(model))
+				modelSelection.addItem(model);
 
 		// Set the selected model
 		SchemaModel selectedModel = harmonyModel.getProjectManager().getSchemaModel(schema.getId());
-		if(selectedModel!=null)
+		if(selectedModel!=null && schemaInfo.shouldExpandAll(selectedModel))
 			modelSelection.setSelectedItem(selectedModel);
 		
 		// Constructs the schema item
