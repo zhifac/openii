@@ -4,6 +4,7 @@ package org.mitre.harmony.view.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -62,9 +63,19 @@ public class SchemaModelDialog extends JInternalFrame
 		this.schemaID = schemaID;
 		this.harmonyModel = harmonyModel;
 		SchemaModel model = harmonyModel.getSchemaManager().getSchemaInfo(schemaID).getModel();
-		
+		HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+		if (!schemaInfo.shouldExpandAll()){
+			schemaInfo.setModel(null);
+		}
+		ArrayList<SchemaModel> possibleModels = HierarchicalSchemaInfo.getSchemaModels();
+		Vector<SchemaModel> acceptableModels = new Vector<SchemaModel>();
+		for (SchemaModel testModel: possibleModels) {
+			if (schemaInfo.shouldExpandAll(testModel)) {
+				acceptableModels.add(testModel);
+			}
+		}
 		// Initializes the mapping list
-		modelList = new JList(new Vector<SchemaModel>(HierarchicalSchemaInfo.getSchemaModels()));
+		modelList = new JList(acceptableModels);
 		modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		for(int i=0; i<modelList.getModel().getSize(); i++)
 			if(modelList.getModel().getElementAt(i).getClass().equals(model.getClass()))

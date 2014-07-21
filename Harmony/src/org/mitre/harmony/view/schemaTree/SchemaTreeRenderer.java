@@ -132,7 +132,10 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			}
 			if(harmonyModel.getPreferences().getShowSchemaTypes())
 			{
-				String typeString = schemaInfo.getTypeString(schemaInfo,element.getId());
+				String typeString = null;
+				SchemaElement type = schemaInfo.getType(schemaInfo, element.getId());
+				if(type!=null) typeString =schemaInfo.getDisplayName(type.getId()).trim();
+			//	String typeString = schemaInfo.getTypeString(schemaInfo,element.getId());
 				if(typeString!=null) text += " <font color='#888888'>(" + typeString + ")</font>";
 			}
 			if (harmonyModel.getPreferences().getShowCardinality())
@@ -154,7 +157,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			// Set the icon
 			if(isHiddenRoot) setIcon(hiddenRootIcon);
 			else if(isHiddenElement) setIcon(hiddenElementIcon);
-			else if(domain!=null) setIcon(isFinished ? finishedAttributeIcon : attributeIcon);
+			else if(domain!=null && element instanceof Attribute) setIcon(isFinished ? finishedAttributeIcon : attributeIcon);
 			else if ( element instanceof Containment) setIcon( isFinished ? finishedContainmentIcon: containmentIcon );  
 			else if ( element instanceof DomainValue) setIcon( isFinished ? finishedDomainValueIcon: domainValueIcon );  
 			else if ( element instanceof Relationship) setIcon( RelationshipIcon );  
