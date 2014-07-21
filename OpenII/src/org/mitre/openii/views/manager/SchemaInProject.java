@@ -28,5 +28,9 @@ public class SchemaInProject
 	public boolean isDeletable() { return deletable; }
 	
 	/** Returns the string representation of this project schema */
-	public String toString() { return schema.toString(); }
+	public String toString() { 
+		if (schema == null)
+			return null;
+		return schema.toString(); 
+		}
 }

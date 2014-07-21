@@ -191,7 +191,8 @@ public class M3SchemaView extends OpenIIEditor
 		for(SchemaElement element : getElements(schemaInfo,Alias.class))
 		{
 			Alias alias = (Alias)element;
-			String aliasedElement = schemaInfo.getDisplayName(alias.getElementID()) + " (" + alias.getElementID() + ")";
+			String  refElementName = schemaInfo.getElement(alias.getElementID()).getName();
+			String aliasedElement = (refElementName==null?alias.getName():refElementName) + " (" + alias.getElementID() + ")";
 			rows.add(getDataRow(alias,aliasedElement));
 		}
 		ExpandBarWidgets.createTablePane(bar, "Aliases", fields, rows);

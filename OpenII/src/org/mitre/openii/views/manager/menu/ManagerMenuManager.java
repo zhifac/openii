@@ -25,52 +25,50 @@ import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Thesaurus;
 
 /** Handles the displaying of the Manager popup menu */
-public class ManagerMenuManager extends MenuManager implements IMenuListener
-{
+public class ManagerMenuManager extends MenuManager implements IMenuListener {
 	/** Stores reference to the tree viewer */
 	private TreeViewer viewer = null;
 
 	/** Stores reference to the currently selected element */
 	private Object element = null;
-	
+
 	/** Constructs the Manager Menu Manager */
-	public ManagerMenuManager(TreeViewer viewer)
-	{
+	public ManagerMenuManager(TreeViewer viewer) {
 		this.viewer = viewer;
 		setRemoveAllWhenShown(true);
 		addMenuListener(this);
 	}
-	
+
 	/** Returns the selected element */
-	public Object getElement()
-		{ return element; }
-	
+	public Object getElement() {
+		return element;
+	}
+
 	/** Generates the editor menu */
-	private void getEditorMenu(IMenuManager menuManager)
-	{
+	private void getEditorMenu(IMenuManager menuManager) {
 		// Retrieve the editor registry
-		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
-		
+		IEditorRegistry registry = PlatformUI.getWorkbench()
+				.getEditorRegistry();
+
 		// Get the editor type for the specified element
 		String editorType = EditorManager.getEditorType(element);
-		if(editorType!=null)
-		{
+		if (editorType != null) {
 			// Retrieve the list of available editors for the specified type
 			IEditorDescriptor editors[] = registry.getEditors(editorType);
-			if(editors.length > 0)
-			{
+			if (editors.length > 0) {
 				// Display the menu for the default editor
-				IEditorDescriptor defaultEditor = registry.getDefaultEditor(editorType);			
-				menuManager.add(new EditorAction(this,"Open",defaultEditor));
-				
+				IEditorDescriptor defaultEditor = registry
+						.getDefaultEditor(editorType);
+				menuManager.add(new EditorAction(this, "Open", defaultEditor));
+
 				// Display the menu to select an editor
-				if(editors.length > 1)
-				{
+				if (editors.length > 1) {
 					MenuManager editorMenu = new MenuManager("Open With");
-					for(IEditorDescriptor editor : editors)
-					{
-						EditorAction action = new EditorAction(this,editor.getLabel(),editor);
-						if(editor.equals(defaultEditor)) action.setChecked(true);
+					for (IEditorDescriptor editor : editors) {
+						EditorAction action = new EditorAction(this,
+								editor.getLabel(), editor);
+						if (editor.equals(defaultEditor))
+							action.setChecked(true);
 						editorMenu.add(action);
 					}
 					menuManager.add(editorMenu);
@@ -78,129 +76,165 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			}
 		}
 	}
-	
+
 	/** Generates the action menu */
-	private void getManagerMenu(IMenuManager menuManager)
-	{
-		// Display the menu for the "Schemas" header
-		if(element.equals(ManagerView.SCHEMAS_HEADER))
-		{
-			menuManager.add(new ManagerAction(this,"Import Schema",ActionType.IMPORT_SCHEMA));
-			menuManager.add(new ManagerAction(this,"New Tag",ActionType.NEW_TAG));
-		}
-		
-		// Display the menu for the "All Schemas" header
-		else if(element.equals(ManagerView.ALL_SCHEMAS_HEADER))
-		{
-			menuManager.add(new ManagerAction(this,"Keyword Search",ActionType.KEYWORD_SEARCH));			
-		}
-		
-		// Display the menu for the selected thesaurus
-		else if(element instanceof Thesaurus)
-		{
-			// Display schema options
-			menuManager.add(new ManagerAction(this,"Edit Thesaurus Properties",ActionType.EDIT_THESAURUS));
-			menuManager.add(new ManagerAction(this,"Export Thesaurus",ActionType.EXPORT_THESAURUS));
-			menuManager.add(new ManagerAction(this,"Delete Thesaurus",ActionType.DELETE_SCHEMA));
-		}
-		
-		// Display the menu for a selected schema
-		else if(element instanceof Schema)
-		{
-			// Display schema options
-			menuManager.add(new ManagerAction(this,"Edit Schema Properties",ActionType.EDIT_SCHEMA));
-			menuManager.add(new ManagerAction(this,"Extend Schema",ActionType.EXTEND_SCHEMA));
-			menuManager.add(new ManagerAction(this,"Export Schema",ActionType.EXPORT_SCHEMA));
-			Action deleteAction = new ManagerAction(this,"Delete Schema",ActionType.DELETE_SCHEMA);
-			if(!OpenIIManager.isDeletable(((Schema)element).getId())) deleteAction.setEnabled(false);
-			menuManager.add(deleteAction);
+	private void getManagerMenu(IMenuManager menuManager) {
+		if (element != null) {   //sometimes the element is null, so no menu needs to be displayed
 
-			// Display options based on schema type
-			String type = ((Schema)element).getType();
-			if(type.equals("Spreadsheet Importer"))
-			{
-				menuManager.add(new Separator());
-				menuManager.add(new ManagerAction(this,"Create Instance Database",ActionType.CREATE_DATA_SOURCE));
+			// Display the menu for the "Schemas" header
+			if (element.equals(ManagerView.SCHEMAS_HEADER)) {
+				menuManager.add(new ManagerAction(this, "Import Schema",
+						ActionType.IMPORT_SCHEMA));
+				menuManager.add(new ManagerAction(this, "New Tag",
+						ActionType.NEW_TAG));
 			}
-		}
-		
-		// Display the menu for a selected tag
-		else if(element instanceof Tag)
-		{
-			// Display tag options
-			menuManager.add(new ManagerAction(this,"Add Subcategory",ActionType.NEW_TAG));
-			menuManager.add(new ManagerAction(this,"Edit Tag",ActionType.EDIT_TAG));
-			menuManager.add(new ManagerAction(this,"Delete Tag",ActionType.DELETE_TAG));
-	
-			menuManager.add(new Separator());
-			
-			// Display option to create project
-			menuManager.add(new ManagerAction(this,"Keyword Search",ActionType.KEYWORD_SEARCH));
-			menuManager.add(new ManagerAction(this,"Create Project",ActionType.CREATE_PROJECT_FROM_TAG));
-			menuManager.add(new ManagerAction(this,"Export Schemas",ActionType.EXPORT_SCHEMAS_BY_TAG));
-		}
-		
-		// Display the menu for a selection tag schema
-		else if(element instanceof SchemaInTag)
-		{
-			menuManager.add(new ManagerAction(this,"Edit Schema Properties",ActionType.EDIT_SCHEMA));
-			menuManager.add(new ManagerAction(this,"Export Schema",ActionType.EXPORT_SCHEMA));
-			menuManager.add(new ManagerAction(this,"Remove Schema from Tag",ActionType.DELETE_TAG_SCHEMA));
-		}
-		
-		// Display the menu for the "Projects" header
-		else if(element.equals(ManagerView.PROJECTS_HEADER))
-		{
-			menuManager.add(new ManagerAction(this,"New Project",ActionType.NEW_PROJECT));
-			menuManager.add(new ManagerAction(this,"Import Project",ActionType.IMPORT_PROJECT));
-			menuManager.add(new ManagerAction(this,"Merge Projects",ActionType.MERGE_PROJECTS));
-		}
 
-		// Display the menu for a selected project
-		else if(element instanceof Project)
-		{
-			menuManager.add(new ManagerAction(this,"Edit Project",ActionType.EDIT_PROJECT));
-			menuManager.add(new ManagerAction(this,"Export Project",ActionType.EXPORT_PROJECT));
-			menuManager.add(new ManagerAction(this,"Delete Project",ActionType.DELETE_PROJECT));
-			menuManager.add(new Separator());
-			menuManager.add(new ManagerAction(this, "Batch Mapping", ActionType.BATCH_MATCH));
-			menuManager.add(new ManagerAction(this,"Import Mapping",ActionType.IMPORT_MAPPING));
-			menuManager.add(new ManagerAction(this,"Generate Vocabulary",ActionType.GENERATE_VOCABULARY));
+			// Display the menu for the "All Schemas" header
+			else if (element.equals(ManagerView.ALL_SCHEMAS_HEADER)) {
+				menuManager.add(new ManagerAction(this, "Keyword Search",
+						ActionType.KEYWORD_SEARCH));
+			}
+
+			// Display the menu for the selected thesaurus
+			else if (element instanceof Thesaurus) {
+				// Display schema options
+				menuManager
+						.add(new ManagerAction(this,
+								"Edit Thesaurus Properties",
+								ActionType.EDIT_THESAURUS));
+				menuManager.add(new ManagerAction(this, "Export Thesaurus",
+						ActionType.EXPORT_THESAURUS));
+				menuManager.add(new ManagerAction(this, "Delete Thesaurus",
+						ActionType.DELETE_SCHEMA));
+			}
+
+			// Display the menu for a selected schema
+			else if (element instanceof Schema) {
+				// Display schema options
+				menuManager.add(new ManagerAction(this,
+						"Edit Schema Properties", ActionType.EDIT_SCHEMA));
+				menuManager.add(new ManagerAction(this, "Extend Schema",
+						ActionType.EXTEND_SCHEMA));
+				menuManager.add(new ManagerAction(this, "Export Schema",
+						ActionType.EXPORT_SCHEMA));
+				Action deleteAction = new ManagerAction(this, "Delete Schema",
+						ActionType.DELETE_SCHEMA);
+				if (!OpenIIManager.isDeletable(((Schema) element).getId()))
+					deleteAction.setEnabled(false);
+				menuManager.add(deleteAction);
+
+				// Display options based on schema type
+				String type = ((Schema) element).getType();
+				if (type.equals("Spreadsheet Importer")) {
+					menuManager.add(new Separator());
+					menuManager.add(new ManagerAction(this,
+							"Create Instance Database",
+							ActionType.CREATE_DATA_SOURCE));
+				}
+			}
+
+			// Display the menu for a selected tag
+			else if (element instanceof Tag) {
+				// Display tag options
+				menuManager.add(new ManagerAction(this, "Add Subcategory",
+						ActionType.NEW_TAG));
+				menuManager.add(new ManagerAction(this, "Edit Tag",
+						ActionType.EDIT_TAG));
+				menuManager.add(new ManagerAction(this, "Delete Tag",
+						ActionType.DELETE_TAG));
+
+				menuManager.add(new Separator());
+
+				// Display option to create project
+				menuManager.add(new ManagerAction(this, "Keyword Search",
+						ActionType.KEYWORD_SEARCH));
+				menuManager.add(new ManagerAction(this, "Create Project",
+						ActionType.CREATE_PROJECT_FROM_TAG));
+				menuManager.add(new ManagerAction(this, "Export Schemas",
+						ActionType.EXPORT_SCHEMAS_BY_TAG));
+			}
+
+			// Display the menu for a selection tag schema
+			else if (element instanceof SchemaInTag) {
+				menuManager.add(new ManagerAction(this,
+						"Edit Schema Properties", ActionType.EDIT_SCHEMA));
+				menuManager.add(new ManagerAction(this, "Export Schema",
+						ActionType.EXPORT_SCHEMA));
+				menuManager
+						.add(new ManagerAction(this, "Remove Schema from Tag",
+								ActionType.DELETE_TAG_SCHEMA));
+			}
+
+			// Display the menu for the "Projects" header
+			else if (element.equals(ManagerView.PROJECTS_HEADER)) {
+				menuManager.add(new ManagerAction(this, "New Project",
+						ActionType.NEW_PROJECT));
+				menuManager.add(new ManagerAction(this, "Import Project",
+						ActionType.IMPORT_PROJECT));
+				menuManager.add(new ManagerAction(this, "Merge Projects",
+						ActionType.MERGE_PROJECTS));
+			}
+
+			// Display the menu for a selected project
+			else if (element instanceof Project) {
+				menuManager.add(new ManagerAction(this, "Edit Project",
+						ActionType.EDIT_PROJECT));
+				menuManager.add(new ManagerAction(this, "Export Project",
+						ActionType.EXPORT_PROJECT));
+				menuManager.add(new ManagerAction(this, "Delete Project",
+						ActionType.DELETE_PROJECT));
+				menuManager.add(new Separator());
+				menuManager.add(new ManagerAction(this, "Batch Mapping",
+						ActionType.BATCH_MATCH));
+				menuManager.add(new ManagerAction(this, "Import Mapping",
+						ActionType.IMPORT_MAPPING));
+				menuManager.add(new ManagerAction(this, "Generate Vocabulary",
+						ActionType.GENERATE_VOCABULARY));
+			}
+
+			// Display the menu for a selected mapping
+			else if (element instanceof Mapping) {
+				menuManager.add(new ManagerAction(this, "Export Mapping",
+						ActionType.EXPORT_MAPPING));
+				menuManager.add(new ManagerAction(this, "Delete Mapping",
+						ActionType.DELETE_MAPPING));
+			}
+
+			// Display the menu for a selected project schema
+			else if (element instanceof SchemaInProject) {
+				menuManager.add(new ManagerAction(this,
+						"Edit Schema Properties", ActionType.EDIT_SCHEMA));
+				menuManager.add(new ManagerAction(this, "Replace Schema",
+						ActionType.REPLACE_SCHEMA));
+				menuManager.add(new ManagerAction(this, "Export Schema",
+						ActionType.EXPORT_SCHEMA));
+				if (((SchemaInProject) element).isDeletable())
+					menuManager.add(new ManagerAction(this,
+							"Remove Schema from Project",
+							ActionType.DELETE_PROJECT_SCHEMA));
+			}
+
+			// Display the menu for a selected project vocabulary
+			else if (element instanceof VocabularyInProject) {
+				menuManager.add(new ManagerAction(this, "Generate Thesaurus",
+						ActionType.GENERATE_THESAURUS));
+				menuManager.add(new ManagerAction(this, "Export Vocabulary",
+						ActionType.EXPORT_VOCABULARY));
+				menuManager.add(new ManagerAction(this, "Delete Vocabulary",
+						ActionType.DELETE_VOCABULARY));
+			}
+
+			// Display the menu for a selected data source
+			else if (element instanceof DataSource)
+				menuManager.add(new ManagerAction(this, "Delete Data Source",
+						ActionType.DELETE_DATA_SOURCE));
 		}
-		
-		// Display the menu for a selected mapping
-		else if(element instanceof Mapping)
-		{
-			menuManager.add(new ManagerAction(this,"Export Mapping",ActionType.EXPORT_MAPPING));
-			menuManager.add(new ManagerAction(this,"Delete Mapping",ActionType.DELETE_MAPPING));
-		}
-		
-		// Display the menu for a selected project schema
-		else if(element instanceof SchemaInProject)
-		{
-			menuManager.add(new ManagerAction(this,"Edit Schema Properties",ActionType.EDIT_SCHEMA));
-			menuManager.add(new ManagerAction(this,"Replace Schema",ActionType.REPLACE_SCHEMA));
-			menuManager.add(new ManagerAction(this,"Export Schema",ActionType.EXPORT_SCHEMA));
-			if(((SchemaInProject)element).isDeletable())
-				menuManager.add(new ManagerAction(this,"Remove Schema from Project",ActionType.DELETE_PROJECT_SCHEMA));
-		}
-		
-		// Display the menu for a selected project vocabulary
-		else if(element instanceof VocabularyInProject) {
-			menuManager.add(new ManagerAction(this,"Generate Thesaurus",ActionType.GENERATE_THESAURUS));
-			menuManager.add(new ManagerAction(this, "Export Vocabulary", ActionType.EXPORT_VOCABULARY)); 
-			menuManager.add(new ManagerAction(this,"Delete Vocabulary",ActionType.DELETE_VOCABULARY));
-		}
-		
-		// Display the menu for a selected data source
-		else if(element instanceof DataSource)
-			menuManager.add(new ManagerAction(this,"Delete Data Source",ActionType.DELETE_DATA_SOURCE));
 	}
-	
+
 	/** Generate the context menu before being displayed */
-	public void menuAboutToShow(IMenuManager menuManager)
-	{		
-		element = ((StructuredSelection)viewer.getSelection()).getFirstElement();
+	public void menuAboutToShow(IMenuManager menuManager) {
+		element = ((StructuredSelection) viewer.getSelection())
+				.getFirstElement();
 		getEditorMenu(menuManager);
 		menuManager.add(new Separator());
 		getManagerMenu(menuManager);

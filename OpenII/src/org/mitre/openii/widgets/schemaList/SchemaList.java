@@ -19,6 +19,7 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.ListWithButtonBar;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /** Constructs a Schema List */
@@ -54,7 +55,7 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 	/** Constructs the dialog */
 	public SchemaList(Composite parent, String heading, HashMap<Integer,SchemaModel> models)
 	{
-		super(parent, heading, getHeaders(models!=null));
+		super(parent, heading, getHeaders(models!=null), false);
 		this.models = models;
 
 		// Generate the buttons associated with the list
@@ -139,14 +140,17 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 			for(int i : getList().getTable().getSelectionIndices())
 				schemaIDs.add(((Schema)getList().getElementAt(i)).getId());
 			if(schemaIDs.size()==0) return;
-				
+	
 			// Determine the current model for the selected schemas
 			SchemaModel model = models.get(schemaIDs.get(0));
-			for(int i=1; i<schemaIDs.size(); i++)
+			Integer selectedSchemaId = schemaIDs.get(0);
+			for(int i=1; i<schemaIDs.size(); i++){
 				if(model==null || !model.equals(models.get(schemaIDs.get(i)))) model=null;
+			}
+			HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(selectedSchemaId), model);
 
 			// Launch the model selection dialog
-			EditProjectSchemaDialog dialog = new EditProjectSchemaDialog(getShell(),model);
+			EditProjectSchemaDialog dialog = new EditProjectSchemaDialog(getShell(),model,schemaInfo );
 			if(dialog.open() == Window.OK)
 			{
 				// Update the selected schema models

@@ -18,7 +18,9 @@ public class SchemaElementContentProvider implements ITreeContentProvider {
 	public SchemaElementContentProvider(SchemaTree schemaView) {
 		this.schemaView = schemaView;
 	}
-
+	SchemaTree getSchemaView() {
+		return schemaView;
+	}
 	/** Returns the children elements for the specified element */
 	public Object[] getChildren(Object element) {
 		HierarchicalSchemaInfo schema = schemaView.getSchema();
@@ -35,21 +37,22 @@ public class SchemaElementContentProvider implements ITreeContentProvider {
 			SchemaElementWrapper wrapper = (SchemaElementWrapper) element;
 			if (!(wrapper.getPathIds().contains(schema.getType(schema, wrapper
 					.getSchemaElement().getId())))) {
-				elements = schema.getChildElements(wrapper.getSchemaElement()
-						.getId(), wrapper.getPathIds());
 				SchemaElement type = schema.getType(schema, wrapper
 						.getSchemaElement().getId());
 				if (type instanceof Domain) {
 					type = null;
 				}
+				if (type != null) {
+					wrapper.insertTypeId(type.getId());
+				}
+				elements = schema.getChildElements(wrapper.getSchemaElement()
+						.getId(), wrapper.getPathIds());
+
 				for (SchemaElement current : elements) {
 					SchemaElementWrapper w = wrapper
 							.createChildWrapper(current);
 					wrappers.add(w);
-					if (type != null) {
-						w.insertTypeId(type.getId());
-
-					}
+					
 				}
 			}
 		}
@@ -74,6 +77,7 @@ public class SchemaElementContentProvider implements ITreeContentProvider {
 
 	// Unused functions
 	public void dispose() {
+
 	}
 
 	public void inputChanged(Viewer arg0, Object arg1, Object arg2) {

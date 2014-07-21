@@ -28,10 +28,13 @@ public class ListWithButtonBar extends Composite
 	
 	/** Constructs the dialog list */
 	public ListWithButtonBar(Composite parent, String heading, String header)
-		{ this(parent, heading, new ArrayList<String>(Arrays.asList(new String[]{header}))); }
-	
+		{ this(parent, heading, new ArrayList<String>(Arrays.asList(new String[]{header})), true); }
 	/** Constructs the dialog list */
-	public ListWithButtonBar(Composite parent, String heading, ArrayList<String> headers)
+	public ListWithButtonBar(Composite parent, String heading, ArrayList<String> headers) {
+		this(parent,heading, headers, true);
+	}
+
+	public ListWithButtonBar(Composite parent, String heading, ArrayList<String> headers, boolean allowMultiSelect)
 	{
 		super(parent, SWT.NONE);
 		setLayout(new GridLayout(1,false));
@@ -54,7 +57,12 @@ public class ListWithButtonBar extends Composite
 		listPane.setLayoutData(gridData);
 		
 		// Create the dialog list
-		list = new TableViewer(listPane, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+		int style = SWT.BORDER | SWT.FULL_SELECTION;
+		
+		if (allowMultiSelect) {
+			style |= SWT.MULTI;
+		}
+		list = new TableViewer(listPane, style);
 		Table table = list.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
@@ -76,7 +84,7 @@ public class ListWithButtonBar extends Composite
 		buttonPane.setLayout(layout);
 		buttonPane.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 	}
-	
+
 	/** Returns the specified column */
 	public TableViewerColumn getColumn(int index)
 		{ return columns.get(index); }
