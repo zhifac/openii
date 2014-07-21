@@ -18,7 +18,7 @@
 				<li><a href="#faq03">What is an OpenII model view? Or how does Open II display a schema?</a></li>
 				<li><a href="#faq04">What is the default hierarchical model viewer for the OpenII tools?</a></li>
 				<li><a href="#faq05">How do I change the model view used to display a schema in OpenII?</a></li>
-				<li><a href="#faq06">How do I view code lists (Domains) in OpenII?</a></li>
+				<li><a href="#faq06">How do I view code lists (value domains) in OpenII?</a></li>
 				<li><a href="#faq07">What is the most successful way of viewing large schemata in OpenII?</a></li>
 				<li><a href="#faq08">How can I improve the performance and results from matching very large schemata?</a></li>
 				<li><a href="#faq09">What are the different types of matching done in Proximity, Harmony and Unity?</a></li>
@@ -48,7 +48,7 @@
 					<div class="chapter">
 						<h3><a name="faq01">What is the neutral schema format that is used by the OpenII tools?</a></h3>
 
-						The Open II schema importer translates popular formalisms (such as XSD, Relational, OWL, and others into one common format called the MITRE Meta Model (M3). The schema components in M3 are Entity, Attribute, Relationship, Subtype, Containment, and Domain. OpenII schemata persist in a relational database and are managed by the OpenII tool called SchemaStore.
+						The Open II schema importer translates popular formalisms (such as XSD, Relational, OWL, and others) into one common format called the MITRE Meta Model (M3). The schema components in M3 are Entity, Attribute, Relationship, Subtype, Containment, and Domain. OpenII schemata persist in a relational database and are managed by the OpenII tool called SchemaStore.
 						<br/><br/> 
 
 						The table below lists the names and definitions of the M3 schema components.<br/><br/>
@@ -60,8 +60,8 @@
 					<div class="chapter">
 						<h3><a name="faq02">Which schema formats can Open II Import?</a></h3>
 
-						The OpenII tool called SchemaStore imports many popular schema formalisms, such as XSD, RDF, or SQL DDL. SchemaStore translates those formalisms into the MITRE Meta Model (M3).  The two tables below shows the alignment of schema components from some popular meta-data formalisms to the M3 schema components. OpenII has many importers and new importers can be added.<br/><br/>					
-						<img src="./support/faq/faq03_chart.png"/>				
+						The OpenII tool called SchemaStore imports many popular schema formalisms, such as XSD, RDF, or SQL DDL. SchemaStore translates those formalisms into the MITRE Meta Model (M3).  The two tables below show the alignment of schema components from some of the popular meta-data formalisms to the schema components in the M3 formalism. OpenII has many importers and new importers can be added.<br/><br/>					
+						<img src="./support/faq/common-formalisms-to-M3_chart.png"/>				
 						In addition to traditional formalisms, SchemaStore imports some big-data schema formats. Correspondence between those and the M3 components are shown in the table below.<br/><br/>		
 						<img src="./support/faq/Big-data-to-M3_chart.png"/>
 					[<a href="#top">top</a>]
@@ -71,14 +71,22 @@
 					<div class="chapter">
 						<h3><a name="faq03">What is an OpenII model view; how does OpenII display a schema?</a></h3>
 
-						Some OpenII tools display schemata as a hierarchies.  Hierarchical displays are available in both the Harmony tool and in the Open II Schema Viewer tool. A schema that is stored in the internal MITRE Meta-model (M3) is transposed to a tree hierarchy by one of several Open II model views. A model view determines how the M3 elements are arranged in the tree. For example, an M3 entity, an M3 attribute, an M3 relationship, and an M3 containment, each may become nodes in the hierarchical display of the model. <br/><br/>  
+						Some OpenII tools display a schema as a hierarchy.  Hierarchical displays are available in both the Harmony tool and in the Open II Schema Viewer tool. A schema that is stored in the internal MITRE Meta-model (M3) is transposed to a tree hierarchy by one of several Open II model views. A model view determines how the M3 elements in a schema are arranged in a tree view. For example, an M3 entity, an M3 attribute, an M3 relationship, an M3 containment, and an M3 Domain, each may become nodes in the hierarchical display of the model. <br/><br/>  
 
-						Choices for model views include the &quot;Specialization View&quot; and the &quot;Containment View&quot;. A user chooses a model view in either the Edit Schema Properties dialog, or in any Open II window that allows for hierarchical displays of a schema (for example Harmony and Schema Viewer).<br/><br/>
-						
-						An OpenII model view determines whether the nodes that appear in a hierarchical organization appear as roots, leaves, siblings, or do not appear at all.  The &quot;Specialization View&quot; is organized according to entity type and subtype associations in the schema. For example, imagine an animal taxonomy displayed using the specialization view. The Animal entity will be displayed as the root, the Cat entity will be indented under the Animal entity, and the Cheetah entity will be indented under the Cat entity. This arrangement is due to the class specialization association among these entity classes. The Specialization View is a type hierarchy. The Specialization View will also display the properties of the entity type indented under the entity type name.<br/><br/>  
-
-						The Containment View displays the hierarchy organized according to the properties that comprise an entity.  For example, a Cat entity which represents the feline animal species may be composed of properties representing limbs, fur, and other characteristics.  Each of those properties may also be defined as entities and together they all make up the representation of Cat.<br/><br/>
-						
+						Choices for model views include the &quot;Specialization View&quot; and the &quot;Containment View&quot;. A user chooses a model view in either the Edit Schema Properties dialog, or in any Open II window that allows for hierarchical displays of a schema (for example Harmony and Schema Viewer). To change the model in which you are viewing the schema, see <a href="#faq05">FAQ 5</a>.
+						<br/><br/>
+						An OpenII model view determines whether the nodes that appear in a hierarchical organization appear as roots, leaves, siblings, or do not appear at all.  
+						<br/><br/>
+						Here is what the same schema about vehicle types might look like in the &quot;Specialization View&quot; and the &quot;Containment View&quot;, side-by-side.
+						<img src="./support/faq/specialization-containment-view-compared.png"/>		
+						<br/><br/>  
+						The Specialization View is organized according to entity type and subtype associations in the schema. The Specialization View is a type hierarchy, as shown in the example above by indenting the AircraftType and WatercraftType entity nodes under the VehicleType entity node. The Specialization View will also display the properties of an entity type indented under the entity node.
+						<br/><br/>  
+						The Containment View displays the hierarchy organized according to the schema's containment hierarchy as it would appear in an XML document, for example.  In the example above, the Vehicle containment node has the attribute NumericIdentifier node indented below, as well as another property called Driveforce.  Driveforce is a containment itself its proproperties appear indented under it. Note that the Containment View doesn't show that there are subtypes of the VehicleType.
+						<br/><br/>
+						The Vehicle schema has a Domain called VehicleEnergyTypeCode. The domain value set can be seen by viewing the schema with the model view called Domain. See screen shot below.
+						<img src="./support/faq/domain-view.png"/>
+						<br/><br/>				
 						For more detail on the basic model views in Open II, see the chart below.
 						<img src="./support/faq/Model-View-Node-Hierarchy_chart.png"/>						 
 						[<a href="#top">top</a>]
@@ -88,7 +96,7 @@
 					<div class="chapter">
 						<h3><a name="faq04">Which hierarchical model view is used by default in OpenII tools?</a></h3>
 
-						If the model view assigned to a schema has not already been set by a user (see <a href="#faq05">FAQ 5</a>), then OpenII tools will default to one of the hierarchical views described in <a href="#faq03">FAQ 3</a>.  The default view is based on characteristics of a schema such as the ratios of subtype, relationship, and containment components in the schema.<br/><br/>Because certain combinations of schema components are typically found in certain schema formalisms, the default view is somewhat predictable based on the original formalism of the schema. For example, relational schemata will typically be shown with the Specialization view. XML schemata will typically be shown with the Containment view, unless a schema is very large in which case OpenII tools will automatically default to the Specialization view.  Some large XML schemata can exceed memory capacity if displayed with the Containment view.  Domains and domain values are shown with the Domain view.<br/><br/>
+						If the model view assigned to a schema has not already been set by a user (see <a href="#faq05">FAQ 5</a>), then OpenII tools will default to one of the hierarchical views described in <a href="#faq03">FAQ 3</a>.  The default view is based on characteristics of a schema such as the ratios of subtype, relationship, and containment components in the schema.<br/><br/>Because certain combinations of schema components are typically found in certain schema formalisms, the default view is somewhat predictable based on the original formalism of the schema. For example, OWL schemata will typically be shown with the Specialization view. XML schemata will typically be shown with the Containment view, unless a schema is very large. OpenII tools will automatically default to displaying a very large XSD using the Specialization view because its size could exceed memory capacity if displayed with the Containment view.  Domains and domain values are shown with the Domain view.<br/><br/>
 
 						The table below shows typical default views for some of the popular schema formalisms.<br/><br/>
 						<img src="./support/faq/default-model-views_chart.png"/>
@@ -133,10 +141,10 @@
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq06">How does a user view code lists (Domains) in OpenII?</a></h3>
+						<h3><a name="faq06">How does a user view code lists (value domains) in OpenII?</a></h3>
 
 						There are multiple model views for an OpenII schema. See <a href="#faq03">FAQ 3</a>
-						explaining some of those.  To view domains and domain values (enumerated
+						for an explaination of how a schema can be displayed.  To view domains and domain values (enumerated
 						values) that are part of a schema or comprise the whole schema, switch the
 						model view to "Domain".  This will show the domain data components in the
 						schema and their associated value lists in both the Schema Viewer and 
@@ -166,8 +174,8 @@
 						<ul>
 							<li>
 								<b>Tip: </b>Use the appropriate schema model view.<br/>
-								<b>How: </b>For large XSD schemata, particularly NIEM Core and the NIEM Domains, the schema model view [<a href="#faq04">FAQ 4</a> and 
-<a href="#faq05">FAQ 5</a>] should be Specialization.  This will ensure best performance in viewing and matching operations. (If the Containment view is preferred, make sure to follow the tips for reducing
+								<b>How: </b>For large XSD schemata, particularly NIEM Core and the NIEM Domains, the schema model view [<a href="#faq03">FAQ 3</a> and 
+<a href="#faq04">FAQ 4</a>] should be Specialization.  This will ensure best performance in viewing and matching operations. (If the Containment view is preferred, make sure to follow the tips for reducing
 compute cycles and memory usage.)
 							</li><br/><br/>
 							<li>
@@ -194,13 +202,13 @@ compute cycles and memory usage.)
 									</li>
 									<li>Finally you can filter out of view certain kinds of matches using the filtering check boxes in the bottom right corner of the Harmony window.
 										<ol type="a"><li>
-										The Best Filter, if checked will only allow the highest scored mapping between nodes be displayed.  See <a href="#faq12">FAQ 12</a> for more detail on what is a "Best" match. 
+										The Best Filter, if checked will only allow the highest scored mapping between nodes be displayed.  See <a href="#faq13">FAQ 13</a> for more detail on what is a "Best" match. 
 										</li><li>
 										The User Filter displays map lines that have a score of 100% due to a user manually accepting the match.
 										</li><li>
 										The System Filter displays those matches that have not been accepted by a user but were generated by the system.
 										</li><li>
-										The Hierarchy Filter effects the display of duplicate matches that are automatically generated from multiple references to the same data component. NIEM schemas have a lot of this as explained in <a href="#faq27">FAQ 27</a>. Checking or un-checking this filter can make a difference in the number of mapping lines displayed -- but only when viewing the schema in Containment model view.  If the schema does not repeatedly reference its own data components or it is displayed with the Specialization model view, then the Hierarchy Filter does not make a difference. For more on the Hierarchy Filter see <a href="#faq29">FAQ 29</a>.
+										The Hierarchy Filter effects the display of duplicate matches that are automatically generated from multiple references to the same data component. NIEM schemas have a lot of this as explained in <a href="#faq27">FAQ 27</a>. Checking or un-checking this filter can make a difference in the number of mapping lines displayed -- but only when viewing the schema in Containment model view.  If the schema does not repeatedly reference its own data components or it is displayed with the Specialization model view, then the Hierarchy Filter does not make a difference. For more on the Hierarchy Filter see <a href="#faq28">FAQ 28</a>.
 										</li> </ol>
 									</li>
 									</ol>
@@ -684,7 +692,7 @@ compute cycles and memory usage.)
 						The tools can be used to explore existing IEPD schemata and to map NIEM to
 						a business domain model.  After the IEPD is finalized, OpenII can be used
 						to map the exchange schema to source and target repository schemata. There
-						are several NIEM related tasks listed in <a href="#faq25">FAQ 25</a> for
+						are several NIEM related tasks listed in <a href="#faq26">FAQ 26</a> for
 						which OpenII can help.  There are also enterprise data management activities
 						that can benefit from OpenII capabilities.<br/><br/>
 
@@ -701,7 +709,7 @@ compute cycles and memory usage.)
 						The Open II schema view displays all the repeated references to data
 						components.  For example, NIEM Core may have about two thousand unique XSD
 						elements, but when fully expanded into an OpenII containment hierarchy view
-						it will have about eleven thousand schema display nodes. See <a href="#fa07">FAQ 7</a>
+						it will have about eleven thousand schema display nodes. See <a href="#fa08">FAQ 8</a>
 						or ways to improve performance with large schemata.<br/><br/>
 
 						[<a href="#top">top</a>]
