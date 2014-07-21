@@ -80,7 +80,7 @@ public class ExplorerView extends OpenIIEditor {
 			    	  	Browser browser = (Browser)event.widget;
 			    	  	String location = event.location;
 			    	  	System.err.println("Browser changing location: " + location);
-			    	  	
+			    	  	explorer.generatePage(SchemaExplorer.elementIDFromURL(location));
 			    	  	// On Internet Explorer, if this isn't called then there are often
 			    	  	// display issues.
 			    	  	browser.redraw(); 
